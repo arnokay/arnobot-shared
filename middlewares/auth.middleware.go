@@ -42,9 +42,8 @@ func (m *AuthMiddlewares) UserSessionGuard(next echo.HandlerFunc) echo.HandlerFu
 
 		sessionToken := parts[1]
 
-		valid, err := m.authModuleService.UserSessionValidate(c.Request().Context(), sessionToken)
+		valid, err := m.authModuleService.AuthSessionValidate(c.Request().Context(), sessionToken)
 		if err != nil {
-			m.logger.ErrorContext(c.Request().Context(), "cannot validate user session", "err", err)
 			return errs.ErrUnauthorized
 		}
 
@@ -52,10 +51,28 @@ func (m *AuthMiddlewares) UserSessionGuard(next echo.HandlerFunc) echo.HandlerFu
 			return errs.ErrUnauthorized
 		}
 
-		user, err := m.authModuleService.AuthSessionExchange(c.Request().Context(), sessionToken)
-		if err != nil {
-			m.logger.ErrorContext(c.Request().Context(), "cannot exchange user session", "err", err)
+		return next(c)
+	}
+}
+
+func (m *AuthMiddlewares) SessionGetOwner(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		header := c.Request().Header.Get("Authorization")
+
+		if !strings.HasPrefix(header, "Session") {
 			return errs.ErrUnauthorized
+		}
+
+		parts := strings.SplitN(header, " ", 2)
+		if len(parts) != 2 {
+			return next(c)
+		}
+
+		sessionToken := parts[1]
+
+		user, err := m.authModuleService.AuthSessionGetOwner(c.Request().Context(), sessionToken)
+		if err != nil {
+			return next(c)
 		}
 
 		c.Set("user", user)

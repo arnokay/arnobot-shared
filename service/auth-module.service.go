@@ -28,7 +28,7 @@ func NewAuthModuleService(mb *nats.Conn) *AuthModuleService {
 	}
 }
 
-func (s *AuthModuleService) UserSessionValidate(ctx context.Context, token string) (bool, error) {
+func (s *AuthModuleService) AuthSessionValidate(ctx context.Context, token string) (bool, error) {
 	req := mbtypes.AuthSessionTokenRequest{
 		Data:    token,
 		TraceID: trace.FromContext(ctx),
@@ -57,7 +57,7 @@ func (s *AuthModuleService) UserSessionValidate(ctx context.Context, token strin
 	return true, nil
 }
 
-func (s *AuthModuleService) AuthSessionExchange(ctx context.Context, token string) (*data.User, error) {
+func (s *AuthModuleService) AuthSessionGetOwner(ctx context.Context, token string) (*data.User, error) {
 	req := mbtypes.AuthSessionTokenRequest{
 		TraceID: trace.FromContext(ctx),
 		Data:    token,
