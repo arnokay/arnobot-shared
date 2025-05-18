@@ -51,23 +51,6 @@ func (e AppError) Unwrap() error {
 	return e.Cause
 }
 
-func FromCode(code string) AppError {
-	switch code {
-	case CodeAlreadyExists.String():
-		return ErrAlreadyExists
-	case CodeNotFound.String():
-		return ErrNotFound
-	case CodeInvalidInput.String():
-		return ErrInvalidInput
-	case CodeInternal.String():
-		return ErrInternal
-	case CodeUnauthorized.String():
-		return ErrUnauthorized
-	default:
-		return ErrInternal
-	}
-}
-
 func ToHTTPStatus(err error) int {
 	var appErr *AppError
 	if errors.As(err, &appErr) {
