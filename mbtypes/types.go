@@ -3,6 +3,8 @@ package mbtypes
 import (
 	"encoding/json"
 	"fmt"
+
+	"arnobot-shared/pkg/errs"
 )
 
 type Request[T any] struct {
@@ -41,12 +43,11 @@ func (r *Request[T]) DecodeJSON(b []byte) error {
 }
 
 type Response[T any] struct {
-	Success bool   `json:"success"`
-	Error   string `json:"error"`
-	Code    string `json:"code"`
-	Reply   string `json:"reply"`
-	TraceID string `json:"traceId"`
-	Data    T      `json:"data"`
+	Success bool           `json:"success"`
+	Error   string         `json:"error"`
+	Code    errs.ErrorCode `json:"code"`
+	TraceID string         `json:"traceId"`
+	Data    T              `json:"data"`
 }
 
 func (r *Response[T]) ToSuccess(data T) {
@@ -54,9 +55,22 @@ func (r *Response[T]) ToSuccess(data T) {
 	r.Data = data
 }
 
-func (r *Response[T]) ToFail(reason string) {
+func (r *Response[T]) ToFail(code errs.ErrorCode, reason string) {
 	r.Success = false
 	r.Error = reason
+	r.Code = code
+}
+
+func (r *Response[T]) ToFailErr(err error) {
+	r.Success = false
+	if appErr, ok := err.(errs.AppError); ok {
+		r.Code = appErr.Code
+		r.Error = appErr.Message
+		return
+	}
+
+	r.Code = errs.CodeInternal
+	r.Error = err.Error()
 }
 
 func (r Response[T]) Encode() ([]byte, error) {

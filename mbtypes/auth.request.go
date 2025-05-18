@@ -6,6 +6,10 @@ type (
 	AuthSessionTokenRequest          = Request[string]
 	AuthSessionTokenValidateResponse = Response[bool]
 	AuthSessionTokenExchangeResponse = Response[*data.User]
-	AuthProviderGetRequest           = Request[data.AuthProviderGet]
-	AuthProviderGetResponse          = Response[*data.AuthProvider]
+
+	AuthProviderGetRequest  = Request[data.AuthProviderGet]
+	AuthProviderGetResponse = Response[*data.AuthProvider]
+
+	AuthProviderUpdateTokensRequest  = Request[data.AuthProviderUpdateTokens]
+	AuthProviderUpdateTokensResponse = Response[bool]
 )
