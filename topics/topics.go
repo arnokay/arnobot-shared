@@ -11,7 +11,9 @@ package topics
 
 // Auth topics
 const (
-	AuthProviderTokenGet     = "auth.provider-token.get"
+	AuthProviderTokenGet          = "auth.provider-token.get"
+	AuthProviderTokenUpdateTokens = "auth.provider-token.update-tokens"
+
 	AuthSessionTokenValidate = "auth.session-token.validate"
 	AuthSessionTokenExchange = "auth.session-token.exchange"
 )
