@@ -13,7 +13,7 @@ SELECT *
 FROM auth.providers
 WHERE provider_user_id = $1 AND provider = $2;
 
--- name: CreateAuthProvider :one
+-- name: AuthProviderCreate :one
 INSERT INTO auth.providers (
   user_id,
   provider_user_id,

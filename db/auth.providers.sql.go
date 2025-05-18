@@ -9,6 +9,47 @@ import (
 	"context"
 )
 
+const authProviderCreate = `-- name: AuthProviderCreate :one
+INSERT INTO auth.providers (
+  user_id,
+  provider_user_id,
+  provider,
+  access_token,
+  refresh_token,
+  access_type
+) VALUES (
+  $1,
+  $2,
+  $3,
+  $4,
+  $5,
+  $6
+) RETURNING id
+`
+
+type AuthProviderCreateParams struct {
+	UserID         int32  `db:"user_id"`
+	ProviderUserID string `db:"provider_user_id"`
+	Provider       string `db:"provider"`
+	AccessToken    string `db:"access_token"`
+	RefreshToken   string `db:"refresh_token"`
+	AccessType     string `db:"access_type"`
+}
+
+func (q *Queries) AuthProviderCreate(ctx context.Context, arg AuthProviderCreateParams) (int32, error) {
+	row := q.db.QueryRow(ctx, authProviderCreate,
+		arg.UserID,
+		arg.ProviderUserID,
+		arg.Provider,
+		arg.AccessToken,
+		arg.RefreshToken,
+		arg.AccessType,
+	)
+	var id int32
+	err := row.Scan(&id)
+	return id, err
+}
+
 const authProviderGetById = `-- name: AuthProviderGetById :one
 SELECT id, user_id, provider, provider_user_id, access_token, refresh_token, access_type, created_at, updated_at
 FROM auth.providers
@@ -115,45 +156,4 @@ func (q *Queries) AuthProviderUpdateTokens(ctx context.Context, arg AuthProvider
 		return 0, err
 	}
 	return result.RowsAffected(), nil
-}
-
-const createAuthProvider = `-- name: CreateAuthProvider :one
-INSERT INTO auth.providers (
-  user_id,
-  provider_user_id,
-  provider,
-  access_token,
-  refresh_token,
-  access_type
-) VALUES (
-  $1,
-  $2,
-  $3,
-  $4,
-  $5,
-  $6
-) RETURNING id
-`
-
-type CreateAuthProviderParams struct {
-	UserID         int32  `db:"user_id"`
-	ProviderUserID string `db:"provider_user_id"`
-	Provider       string `db:"provider"`
-	AccessToken    string `db:"access_token"`
-	RefreshToken   string `db:"refresh_token"`
-	AccessType     string `db:"access_type"`
-}
-
-func (q *Queries) CreateAuthProvider(ctx context.Context, arg CreateAuthProviderParams) (int32, error) {
-	row := q.db.QueryRow(ctx, createAuthProvider,
-		arg.UserID,
-		arg.ProviderUserID,
-		arg.Provider,
-		arg.AccessToken,
-		arg.RefreshToken,
-		arg.AccessType,
-	)
-	var id int32
-	err := row.Scan(&id)
-	return id, err
 }

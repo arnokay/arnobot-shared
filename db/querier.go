@@ -9,6 +9,7 @@ import (
 )
 
 type Querier interface {
+	AuthProviderCreate(ctx context.Context, arg AuthProviderCreateParams) (int32, error)
 	AuthProviderGetById(ctx context.Context, arg AuthProviderGetByIdParams) (AuthProvider, error)
 	AuthProviderGetByProviderUserId(ctx context.Context, arg AuthProviderGetByProviderUserIdParams) (AuthProvider, error)
 	AuthProviderGetByUserId(ctx context.Context, arg AuthProviderGetByUserIdParams) (AuthProvider, error)
@@ -20,7 +21,6 @@ type Querier interface {
 	AuthSessionGet(ctx context.Context, token string) (AuthSession, error)
 	AuthSessionGetOwner(ctx context.Context, token string) (AuthSessionGetOwnerRow, error)
 	AuthSessionValidate(ctx context.Context, token string) (AuthSessionStatus, error)
-	CreateAuthProvider(ctx context.Context, arg CreateAuthProviderParams) (int32, error)
 	DefaultBroadcasterGet(ctx context.Context) (TwitchDefaultBroadcaster, error)
 	DefaultBroadcasterUpdate(ctx context.Context, twitchUserID string) (int64, error)
 	TwitchDefaultBotGet(ctx context.Context) (TwitchDefaultBot, error)
