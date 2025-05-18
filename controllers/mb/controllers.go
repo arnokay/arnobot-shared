@@ -1,5 +1,7 @@
 package controllers
 
-type Controller interface {
-	Connect()
+import "github.com/nats-io/nats.go"
+
+type NatsController interface {
+	Connect(conn *nats.Conn)
 }
