@@ -41,8 +41,8 @@ type AuthProviderCreate struct {
 	AccessType     string
 }
 
-func (p AuthProviderCreate) ToDB() db.CreateAuthProviderParams {
-	return db.CreateAuthProviderParams{
+func (p AuthProviderCreate) ToDB() db.AuthProviderCreateParams {
+	return db.AuthProviderCreateParams{
 		UserID:         int32(p.UserID),
 		Provider:       p.Provider,
 		ProviderUserID: p.ProviderUserID,
