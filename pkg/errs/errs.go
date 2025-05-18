@@ -5,19 +5,19 @@ import (
 	"net/http"
 )
 
-type errorCode string
+type ErrorCode string
 
-func (ec errorCode) String() string {
+func (ec ErrorCode) String() string {
 	return string(ec)
 }
 
 const (
-	CodeHTTP          errorCode = "http"
-	CodeNotFound      errorCode = "not_found"
-	CodeAlreadyExists errorCode = "already_exists"
-	CodeInvalidInput  errorCode = "invalid_input"
-	CodeInternal      errorCode = "internal"
-	CodeUnauthorized  errorCode = "unauthorized"
+	CodeHTTP          ErrorCode = "http"
+	CodeNotFound      ErrorCode = "not_found"
+	CodeAlreadyExists ErrorCode = "already_exists"
+	CodeInvalidInput  ErrorCode = "invalid_input"
+	CodeInternal      ErrorCode = "internal"
+	CodeUnauthorized  ErrorCode = "unauthorized"
 )
 
 var (
@@ -26,15 +26,16 @@ var (
 	ErrInternal      = AppError{Code: CodeInternal, Message: "internal server error"}
 	ErrUnauthorized  = AppError{Code: CodeUnauthorized, Message: "unauthorized access"}
 	ErrAlreadyExists = AppError{Code: CodeAlreadyExists, Message: "resource already exists"}
+	ErrHTTP          = AppError{Code: CodeHTTP, Message: "http error"}
 )
 
 type AppError struct {
-	Code    errorCode
+	Code    ErrorCode
 	Message string
 	Cause   error
 }
 
-func New(code errorCode, msg string, err error) AppError {
+func New(code ErrorCode, msg string, err error) AppError {
 	return AppError{
 		Code:    code,
 		Cause:   err,
@@ -51,20 +52,20 @@ func (e AppError) Unwrap() error {
 }
 
 func FromCode(code string) AppError {
-  switch code {
-  case CodeAlreadyExists.String():
-    return ErrAlreadyExists
-  case CodeNotFound.String():
-    return ErrNotFound
-  case CodeInvalidInput.String():
-    return ErrInvalidInput
-  case CodeInternal.String():
-    return ErrInternal
-  case CodeUnauthorized.String():
-    return ErrUnauthorized
-  default:
-    return ErrInternal
-  }
+	switch code {
+	case CodeAlreadyExists.String():
+		return ErrAlreadyExists
+	case CodeNotFound.String():
+		return ErrNotFound
+	case CodeInvalidInput.String():
+		return ErrInvalidInput
+	case CodeInternal.String():
+		return ErrInternal
+	case CodeUnauthorized.String():
+		return ErrUnauthorized
+	default:
+		return ErrInternal
+	}
 }
 
 func ToHTTPStatus(err error) int {
