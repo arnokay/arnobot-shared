@@ -3,47 +3,57 @@ package service
 import (
 	"context"
 	"log/slog"
+	"sync"
 
 	"github.com/nicklaw5/helix/v2"
 
 	"arnobot-shared/applog"
+	"arnobot-shared/data"
 	"arnobot-shared/db"
-	"arnobot-shared/pkg/errs"
 )
 
+
+// TODO: right now there is no cleanup for clients
 type HelixManager struct {
-	query        db.Querier
 	logger       *slog.Logger
 	clientID     string
 	clientSecret string
+
+	clients map[string]*helix.Client
+	mu      sync.RWMutex
+
+	authModuleService *AuthModuleService
 }
 
-func NewHelixManager(querier db.Querier, clientID, clientSecret string) *HelixManager {
-	logger := applog.NewServiceLogger("HelixManager")
+func NewHelixManager(authModuleSerivce *AuthModuleService, clientID, clientSecret string) *HelixManager {
+	logger := applog.NewServiceLogger("helix-manager")
 
 	return &HelixManager{
-		query:        querier,
-		logger:       logger,
-		clientID:     clientID,
-		clientSecret: clientSecret,
+		logger:            logger,
+		clientID:          clientID,
+		clientSecret:      clientSecret,
+		clients:           make(map[string]*helix.Client),
+		authModuleService: authModuleSerivce,
 	}
 }
 
-func (hm *HelixManager) GetProviderByTwitchID(ctx context.Context, twitchID string) (*db.AuthProvider, error) {
-	provider, err := hm.query.AuthProviderGetByProviderUserId(ctx, db.AuthProviderGetByProviderUserIdParams{
-		ProviderUserID: twitchID,
-		Provider:       "twitch",
-	})
-	if err != nil {
-		hm.logger.Error("cannot get auth provider", "id", twitchID, "err", err)
-		return nil, errs.ErrNotFound
+func (hm *HelixManager) GetByProvider(ctx context.Context, provider db.AuthProvider) *helix.Client {
+	hm.mu.RLock()
+	client, exists := hm.clients[provider.ProviderUserID]
+	hm.mu.RUnlock()
+
+	if exists {
+		return client
 	}
 
-	return &provider, nil
-}
+	hm.mu.Lock()
+	defer hm.mu.Unlock()
 
-func (hm *HelixManager) GetByTwitchID(ctx context.Context, provider db.AuthProvider) (*helix.Client, error) {
-	client, _ := helix.NewClient(&helix.Options{
+	if client, exists := hm.clients[provider.ProviderUserID]; exists {
+		return client
+	}
+
+	client, _ = helix.NewClient(&helix.Options{
 		ClientID:        hm.clientID,
 		ClientSecret:    hm.clientSecret,
 		UserAccessToken: provider.AccessToken,
@@ -51,16 +61,18 @@ func (hm *HelixManager) GetByTwitchID(ctx context.Context, provider db.AuthProvi
 	})
 
 	client.OnUserAccessTokenRefreshed(func(newAccessToken, newRefreshToken string) {
-		count, err := hm.query.AuthProviderUpdateTokens(ctx, db.AuthProviderUpdateTokensParams{
-			ID:           provider.ID,
+		hm.logger.InfoContext(ctx, "token refreshed", "providerUserID", provider.ProviderUserID)
+		err := hm.authModuleService.AuthProviderUpdateTokens(ctx, data.AuthProviderUpdateTokens{
+			ID:           int(provider.ID),
 			AccessToken:  newAccessToken,
 			RefreshToken: &newRefreshToken,
 		})
-
-		if err != nil || count == 0 {
-			hm.logger.ErrorContext(ctx, "cannot update provider tokens", "provider_id", provider.ID, "err", err, "count", count)
+		if err != nil {
+			hm.logger.ErrorContext(ctx, "failed to update tokens", "providerID", provider.ID, "providerUserID", provider.ProviderUserID)
 		}
 	})
 
-	return client, nil
+  hm.clients[provider.ProviderUserID] = client
+
+	return client
 }
