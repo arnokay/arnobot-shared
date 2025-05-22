@@ -9,15 +9,16 @@ import (
 
 	"arnobot-shared/applog"
 	"arnobot-shared/data"
-	"arnobot-shared/db"
+	"arnobot-shared/pkg/errs"
 )
-
 
 // TODO: right now there is no cleanup for clients
 type HelixManager struct {
 	logger       *slog.Logger
 	clientID     string
 	clientSecret string
+
+	appClient *helix.Client
 
 	clients map[string]*helix.Client
 	mu      sync.RWMutex
@@ -28,16 +29,38 @@ type HelixManager struct {
 func NewHelixManager(authModuleSerivce *AuthModuleService, clientID, clientSecret string) *HelixManager {
 	logger := applog.NewServiceLogger("helix-manager")
 
+	appClient, _ := helix.NewClient(&helix.Options{
+		ClientID:     clientID,
+		ClientSecret: clientSecret,
+	})
+
 	return &HelixManager{
 		logger:            logger,
 		clientID:          clientID,
 		clientSecret:      clientSecret,
+		appClient:         appClient,
 		clients:           make(map[string]*helix.Client),
 		authModuleService: authModuleSerivce,
 	}
 }
 
-func (hm *HelixManager) GetByProvider(ctx context.Context, provider db.AuthProvider) *helix.Client {
+func (hm *HelixManager) GetApp(ctx context.Context) *helix.Client {
+	return hm.appClient
+}
+
+func (hm *HelixManager) GetByID(ctx context.Context, twitchID string) (*helix.Client, error) {
+	hm.mu.RLock()
+	client, exists := hm.clients[twitchID]
+	hm.mu.RUnlock()
+
+	if exists {
+		return client, nil
+	}
+
+	return nil, errs.New(errs.CodeNotFound, "helix client is not found", nil)
+}
+
+func (hm *HelixManager) GetByProvider(ctx context.Context, provider data.AuthProvider) *helix.Client {
 	hm.mu.RLock()
 	client, exists := hm.clients[provider.ProviderUserID]
 	hm.mu.RUnlock()
@@ -72,7 +95,7 @@ func (hm *HelixManager) GetByProvider(ctx context.Context, provider db.AuthProvi
 		}
 	})
 
-  hm.clients[provider.ProviderUserID] = client
+	hm.clients[provider.ProviderUserID] = client
 
 	return client
 }
