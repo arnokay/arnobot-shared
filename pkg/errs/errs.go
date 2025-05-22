@@ -18,6 +18,7 @@ const (
 	CodeInvalidInput  ErrorCode = "invalid_input"
 	CodeInternal      ErrorCode = "internal"
 	CodeUnauthorized  ErrorCode = "unauthorized"
+	CodeExternal      ErrorCode = "external"
 )
 
 var (
@@ -27,18 +28,19 @@ var (
 	ErrUnauthorized  = AppError{Code: CodeUnauthorized, Message: "unauthorized access"}
 	ErrAlreadyExists = AppError{Code: CodeAlreadyExists, Message: "resource already exists"}
 	ErrHTTP          = AppError{Code: CodeHTTP, Message: "http error"}
+	ErrExternal      = AppError{Code: CodeExternal, Message: "external error"}
 )
 
 type AppError struct {
-	Code    ErrorCode
-	Message string
-	Cause   error
+	Code    ErrorCode `json:"code"`
+	Message string    `json:"message"`
+	cause   error     `json:"-"`
 }
 
 func New(code ErrorCode, msg string, err error) AppError {
 	return AppError{
 		Code:    code,
-		Cause:   err,
+		cause:   err,
 		Message: msg,
 	}
 }
@@ -48,7 +50,7 @@ func (e AppError) Error() string {
 }
 
 func (e AppError) Unwrap() error {
-	return e.Cause
+	return e.cause
 }
 
 func ToHTTPStatus(err error) int {
@@ -65,6 +67,8 @@ func ToHTTPStatus(err error) int {
 			return http.StatusUnauthorized
 		case CodeInternal:
 			return http.StatusInternalServerError
+		case CodeExternal:
+			return http.StatusServiceUnavailable
 		default:
 			return http.StatusInternalServerError
 		}
