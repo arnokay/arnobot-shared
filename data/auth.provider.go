@@ -14,6 +14,7 @@ type AuthProvider struct {
 	AccessToken    string
 	RefreshToken   string
 	AccessType     string
+	Scopes         []string
 	CreatedAt      time.Time
 	UpdatedAt      time.Time
 }
@@ -27,6 +28,7 @@ func NewProviderAuthFromDB(fromDB db.AuthProvider) AuthProvider {
 		AccessToken:    fromDB.AccessToken,
 		RefreshToken:   fromDB.RefreshToken,
 		AccessType:     fromDB.AccessType,
+		Scopes:         fromDB.Scopes,
 		CreatedAt:      fromDB.CreatedAt.Time,
 		UpdatedAt:      fromDB.UpdatedAt.Time,
 	}
@@ -39,6 +41,7 @@ type AuthProviderCreate struct {
 	AccessToken    string
 	RefreshToken   string
 	AccessType     string
+	Scopes         []string
 }
 
 func (p AuthProviderCreate) ToDB() db.AuthProviderCreateParams {
@@ -49,6 +52,7 @@ func (p AuthProviderCreate) ToDB() db.AuthProviderCreateParams {
 		AccessToken:    p.AccessToken,
 		RefreshToken:   p.RefreshToken,
 		AccessType:     p.AccessType,
+		Scopes:         p.Scopes,
 	}
 }
 

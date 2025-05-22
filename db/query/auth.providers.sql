@@ -20,14 +20,16 @@ INSERT INTO auth.providers (
   provider,
   access_token,
   refresh_token,
-  access_type
+  access_type,
+  scopes
 ) VALUES (
   $1,
   $2,
   $3,
   $4,
   $5,
-  $6
+  $6,
+  $7
 ) RETURNING id;
 
 -- name: AuthProviderUpdateTokens :execrows

@@ -16,24 +16,27 @@ INSERT INTO auth.providers (
   provider,
   access_token,
   refresh_token,
-  access_type
+  access_type,
+  scopes
 ) VALUES (
   $1,
   $2,
   $3,
   $4,
   $5,
-  $6
+  $6,
+  $7
 ) RETURNING id
 `
 
 type AuthProviderCreateParams struct {
-	UserID         int32  `db:"user_id"`
-	ProviderUserID string `db:"provider_user_id"`
-	Provider       string `db:"provider"`
-	AccessToken    string `db:"access_token"`
-	RefreshToken   string `db:"refresh_token"`
-	AccessType     string `db:"access_type"`
+	UserID         int32    `db:"user_id"`
+	ProviderUserID string   `db:"provider_user_id"`
+	Provider       string   `db:"provider"`
+	AccessToken    string   `db:"access_token"`
+	RefreshToken   string   `db:"refresh_token"`
+	AccessType     string   `db:"access_type"`
+	Scopes         []string `db:"scopes"`
 }
 
 func (q *Queries) AuthProviderCreate(ctx context.Context, arg AuthProviderCreateParams) (int32, error) {
@@ -44,6 +47,7 @@ func (q *Queries) AuthProviderCreate(ctx context.Context, arg AuthProviderCreate
 		arg.AccessToken,
 		arg.RefreshToken,
 		arg.AccessType,
+		arg.Scopes,
 	)
 	var id int32
 	err := row.Scan(&id)
@@ -51,7 +55,7 @@ func (q *Queries) AuthProviderCreate(ctx context.Context, arg AuthProviderCreate
 }
 
 const authProviderGetById = `-- name: AuthProviderGetById :one
-SELECT id, user_id, provider, provider_user_id, access_token, refresh_token, access_type, created_at, updated_at
+SELECT id, user_id, provider, provider_user_id, access_token, refresh_token, access_type, created_at, updated_at, scopes
 FROM auth.providers
 WHERE id = $1 AND provider = $2
 `
@@ -74,12 +78,13 @@ func (q *Queries) AuthProviderGetById(ctx context.Context, arg AuthProviderGetBy
 		&i.AccessType,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Scopes,
 	)
 	return i, err
 }
 
 const authProviderGetByProviderUserId = `-- name: AuthProviderGetByProviderUserId :one
-SELECT id, user_id, provider, provider_user_id, access_token, refresh_token, access_type, created_at, updated_at
+SELECT id, user_id, provider, provider_user_id, access_token, refresh_token, access_type, created_at, updated_at, scopes
 FROM auth.providers
 WHERE provider_user_id = $1 AND provider = $2
 `
@@ -102,12 +107,13 @@ func (q *Queries) AuthProviderGetByProviderUserId(ctx context.Context, arg AuthP
 		&i.AccessType,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Scopes,
 	)
 	return i, err
 }
 
 const authProviderGetByUserId = `-- name: AuthProviderGetByUserId :one
-SELECT id, user_id, provider, provider_user_id, access_token, refresh_token, access_type, created_at, updated_at
+SELECT id, user_id, provider, provider_user_id, access_token, refresh_token, access_type, created_at, updated_at, scopes
 FROM auth.providers
 WHERE user_id = $1 AND provider = $2
 `
@@ -130,6 +136,7 @@ func (q *Queries) AuthProviderGetByUserId(ctx context.Context, arg AuthProviderG
 		&i.AccessType,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Scopes,
 	)
 	return i, err
 }

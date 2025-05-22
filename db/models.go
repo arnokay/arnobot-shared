@@ -151,6 +151,7 @@ type AuthProvider struct {
 	AccessType     string           `db:"access_type"`
 	CreatedAt      pgtype.Timestamp `db:"created_at"`
 	UpdatedAt      pgtype.Timestamp `db:"updated_at"`
+	Scopes         []string         `db:"scopes"`
 }
 
 type AuthSession struct {
@@ -159,6 +160,12 @@ type AuthSession struct {
 	UserID     int32             `db:"user_id"`
 	CreatedAt  pgtype.Timestamp  `db:"created_at"`
 	LastUsedAt pgtype.Timestamp  `db:"last_used_at"`
+}
+
+type TwitchBot struct {
+	UserID       int32         `db:"user_id"`
+	TwitchUserID string        `db:"twitch_user_id"`
+	Role         TwitchBotRole `db:"role"`
 }
 
 type TwitchDefaultBot struct {
@@ -180,12 +187,6 @@ type TwitchUser struct {
 	ProfileImageUrl string           `db:"profile_image_url"`
 	CreatedAt       pgtype.Timestamp `db:"created_at"`
 	AuthProviderID  *int32           `db:"auth_provider_id"`
-}
-
-type TwitchUserBotAccount struct {
-	UserID       int32         `db:"user_id"`
-	TwitchUserID string        `db:"twitch_user_id"`
-	Role         TwitchBotRole `db:"role"`
 }
 
 type TwitchWebhook struct {

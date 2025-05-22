@@ -143,6 +143,12 @@ table "auth" "providers" {
     default = ""
   }
 
+  column "scopes" {
+    type = sql("text[]")
+    null = false
+    default = "{}"
+  }
+
   column "created_at" {
     type = timestamp
     null = false
@@ -288,7 +294,7 @@ enum "twitch" "bot_role" {
   ]
 }
 
-table "twitch" "user_bot_accounts" {
+table "twitch" "bot" {
   schema = schema.twitch
 
   column "user_id" {
@@ -394,7 +400,7 @@ table "twitch" "webhooks" {
 
   foreign_key "user_bot_account" {
     columns = [column.user_id, column.bot_id]
-    ref_columns = [table.twitch.user_bot_accounts.column.user_id, table.twitch.user_bot_accounts.column.twitch_user_id]
+    ref_columns = [table.twitch.bot.column.user_id, table.twitch.bot.column.twitch_user_id]
     on_update = CASCADE
     on_delete = RESTRICT
   }
