@@ -18,6 +18,7 @@ const (
 	CodeInvalidInput  ErrorCode = "invalid_input"
 	CodeInternal      ErrorCode = "internal"
 	CodeUnauthorized  ErrorCode = "unauthorized"
+	CodeForbidden     ErrorCode = "forbidden"
 	CodeExternal      ErrorCode = "external"
 )
 
@@ -29,6 +30,7 @@ var (
 	ErrAlreadyExists = AppError{Code: CodeAlreadyExists, Message: "resource already exists"}
 	ErrHTTP          = AppError{Code: CodeHTTP, Message: "http error"}
 	ErrExternal      = AppError{Code: CodeExternal, Message: "external error"}
+	ErrForbidden     = AppError{Code: CodeForbidden, Message: "no access"}
 )
 
 type AppError struct {
@@ -69,6 +71,8 @@ func ToHTTPStatus(err error) int {
 			return http.StatusInternalServerError
 		case CodeExternal:
 			return http.StatusServiceUnavailable
+    case CodeForbidden:
+      return http.StatusForbidden
 		default:
 			return http.StatusInternalServerError
 		}
