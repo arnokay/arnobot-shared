@@ -6,6 +6,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 
+	"arnobot-shared/appctx"
 	"arnobot-shared/applog"
 	"arnobot-shared/pkg/errs"
 	"arnobot-shared/service"
@@ -75,7 +76,8 @@ func (m *AuthMiddlewares) SessionGetOwner(next echo.HandlerFunc) echo.HandlerFun
 			return next(c)
 		}
 
-		c.Set("user", user)
+    ctx := appctx.SetUser(c.Request().Context(), user)
+		c.SetRequest(c.Request().WithContext(ctx))
 
 		return next(c)
 	}
