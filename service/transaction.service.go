@@ -1,0 +1,112 @@
+package service
+
+import (
+	"context"
+	"errors"
+	"log/slog"
+
+	"arnobot-shared/applog"
+	"arnobot-shared/pkg/errs"
+
+	"github.com/jackc/pgx/v5"
+)
+
+type ITransactionService interface {
+	Begin(ctx context.Context) (context.Context, error)
+	Commit(ctx context.Context) error
+	Rollback(ctx context.Context) error
+}
+
+type transactionCtx string
+
+const txKey transactionCtx = "tx-key"
+
+func ExtractTx(ctx context.Context) pgx.Tx {
+	tx, ok := ctx.Value(txKey).(pgx.Tx)
+	if !ok {
+		return nil
+	}
+
+	return tx
+}
+
+type pgxTransactional interface {
+	Begin(ctx context.Context) (pgx.Tx, error)
+}
+
+type PgxTransactionService struct {
+	db pgxTransactional
+
+	logger *slog.Logger
+}
+
+func NewPgxTransactionService(db pgxTransactional) *PgxTransactionService {
+  logger := applog.NewServiceLogger("transaction-service")
+
+  return &PgxTransactionService{
+    db: db,
+
+    logger: logger,
+  }
+}
+
+func (s *PgxTransactionService) Begin(ctx context.Context) (context.Context, error) {
+	tx, err := s.db.Begin(ctx)
+	if err != nil {
+		s.logger.ErrorContext(ctx, "cannot begin transaction", "err", err)
+		return nil, errs.ErrInternal
+	}
+	txCtx := context.WithValue(ctx, txKey, tx)
+
+  s.logger.DebugContext(ctx, "begined transaction")
+
+	return txCtx, nil
+}
+
+func (s *PgxTransactionService) Commit(ctx context.Context) error {
+	tx, ok := ctx.Value(txKey).(pgx.Tx)
+	if !ok || tx == nil {
+		s.logger.ErrorContext(ctx, "transaction is nil, cannot commit")
+		return errs.ErrInternal
+	}
+
+	err := tx.Commit(ctx)
+	if err != nil {
+		if errors.Is(err, pgx.ErrTxClosed) {
+			return nil
+		}
+		if errors.Is(err, pgx.ErrTxCommitRollback) {
+			s.logger.WarnContext(ctx, "cannot commit, transaction was rolled back", "err", err)
+			return errs.ErrInternal
+		}
+
+		s.logger.ErrorContext(ctx, "cannot commit", "err", err)
+		return errs.ErrInternal
+	}
+
+  s.logger.DebugContext(ctx, "commited transaction")
+
+	return nil
+}
+
+func (s *PgxTransactionService) Rollback(ctx context.Context) error {
+	tx, ok := ctx.Value(txKey).(pgx.Tx)
+	if !ok || tx == nil {
+		s.logger.ErrorContext(ctx, "transaction is nil, cannot rollback")
+		return errs.ErrInternal
+	}
+
+	err := tx.Rollback(ctx)
+	if err != nil {
+		if errors.Is(err, pgx.ErrTxClosed) {
+			return nil
+		}
+
+		s.logger.ErrorContext(ctx, "cannot rollback", "err", err)
+		return errs.ErrInternal
+	}
+
+  s.logger.DebugContext(ctx, "rolled back transaction")
+
+	return nil
+}

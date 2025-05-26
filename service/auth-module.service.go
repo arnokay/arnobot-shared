@@ -115,10 +115,13 @@ func (s *AuthModuleService) AuthProviderGet(ctx context.Context, data data.AuthP
 	return res.Data, nil
 }
 
-func (s *AuthModuleService) AuthProviderUpdateTokens(ctx context.Context, data data.AuthProviderUpdateTokens) error {
+func (s *AuthModuleService) AuthProviderUpdateTokens(ctx context.Context, id int32, data data.AuthProviderUpdateTokens) error {
 	req := mbtypes.AuthProviderUpdateTokensRequest{
 		TraceID: trace.FromContext(ctx),
-		Data:    data,
+		Data: mbtypes.AuthProviderUpdateTokensPayload{
+			ID:   id,
+			Data: data,
+		},
 	}
 
 	b, _ := req.Encode()

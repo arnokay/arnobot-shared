@@ -7,8 +7,8 @@ import (
 )
 
 type AuthProvider struct {
-	ID             int
-	UserID         int
+	ID             int32
+	UserID         int32
 	Provider       string
 	ProviderUserID string
 	AccessToken    string
@@ -21,21 +21,21 @@ type AuthProvider struct {
 
 func NewProviderAuthFromDB(fromDB db.AuthProvider) AuthProvider {
 	return AuthProvider{
-		ID:             int(fromDB.ID),
-		UserID:         int(fromDB.UserID),
+		ID:             fromDB.ID,
+		UserID:         fromDB.UserID,
 		Provider:       fromDB.Provider,
 		ProviderUserID: fromDB.ProviderUserID,
 		AccessToken:    fromDB.AccessToken,
 		RefreshToken:   fromDB.RefreshToken,
 		AccessType:     fromDB.AccessType,
 		Scopes:         fromDB.Scopes,
-		CreatedAt:      fromDB.CreatedAt.Time,
-		UpdatedAt:      fromDB.UpdatedAt.Time,
+		CreatedAt:      fromDB.CreatedAt,
+		UpdatedAt:      fromDB.UpdatedAt,
 	}
 }
 
 type AuthProviderCreate struct {
-	UserID         int
+	UserID         int32
 	Provider       string
 	ProviderUserID string
 	AccessToken    string
@@ -45,33 +45,37 @@ type AuthProviderCreate struct {
 }
 
 func (p AuthProviderCreate) ToDB() db.AuthProviderCreateParams {
+	scopes := p.Scopes
+	if scopes == nil {
+		scopes = make([]string, 0)
+	}
+
 	return db.AuthProviderCreateParams{
-		UserID:         int32(p.UserID),
+		UserID:         p.UserID,
 		Provider:       p.Provider,
 		ProviderUserID: p.ProviderUserID,
 		AccessToken:    p.AccessToken,
 		RefreshToken:   p.RefreshToken,
 		AccessType:     p.AccessType,
-		Scopes:         p.Scopes,
+		Scopes:         scopes,
 	}
 }
 
 type AuthProviderUpdateTokens struct {
-	ID           int
 	AccessToken  string
 	RefreshToken *string
 }
 
-func (p AuthProviderUpdateTokens) ToDB() db.AuthProviderUpdateTokensParams {
+func (p AuthProviderUpdateTokens) ToDB(id int32) db.AuthProviderUpdateTokensParams {
 	return db.AuthProviderUpdateTokensParams{
-		ID:           int32(p.ID),
+		ID:           id,
 		AccessToken:  p.AccessToken,
 		RefreshToken: p.RefreshToken,
 	}
 }
 
 type AuthProviderUpdate struct {
-	UserID         int
+	UserID         int32
 	ProviderUserID string
 	AccessToken    string
 	RefreshToken   string
@@ -81,4 +85,11 @@ type AuthProviderUpdate struct {
 type AuthProviderGet struct {
 	ProviderUserID string
 	Provider       string
+}
+
+func (p AuthProviderGet) ToDB() db.AuthProviderGetByProviderUserIdParams {
+	return db.AuthProviderGetByProviderUserIdParams{
+		ProviderUserID: p.ProviderUserID,
+		Provider:       p.Provider,
+	}
 }

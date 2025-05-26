@@ -7,8 +7,7 @@ package db
 import (
 	"database/sql/driver"
 	"fmt"
-
-	"github.com/jackc/pgx/v5/pgtype"
+	"time"
 )
 
 type AuthSessionStatus string
@@ -97,6 +96,48 @@ func (ns NullTwitchBotRole) Value() (driver.Value, error) {
 	return string(ns.TwitchBotRole), nil
 }
 
+type TwitchWebhookStatus string
+
+const (
+	TwitchWebhookStatusActive      TwitchWebhookStatus = "active"
+	TwitchWebhookStatusDeactivated TwitchWebhookStatus = "deactivated"
+)
+
+func (e *TwitchWebhookStatus) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = TwitchWebhookStatus(s)
+	case string:
+		*e = TwitchWebhookStatus(s)
+	default:
+		return fmt.Errorf("unsupported scan type for TwitchWebhookStatus: %T", src)
+	}
+	return nil
+}
+
+type NullTwitchWebhookStatus struct {
+	TwitchWebhookStatus TwitchWebhookStatus
+	Valid               bool // Valid is true if TwitchWebhookStatus is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullTwitchWebhookStatus) Scan(value interface{}) error {
+	if value == nil {
+		ns.TwitchWebhookStatus, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.TwitchWebhookStatus.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullTwitchWebhookStatus) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.TwitchWebhookStatus), nil
+}
+
 type UserStatus string
 
 const (
@@ -142,68 +183,77 @@ func (ns NullUserStatus) Value() (driver.Value, error) {
 }
 
 type AuthProvider struct {
-	ID             int32            `db:"id"`
-	UserID         int32            `db:"user_id"`
-	Provider       string           `db:"provider"`
-	ProviderUserID string           `db:"provider_user_id"`
-	AccessToken    string           `db:"access_token"`
-	RefreshToken   string           `db:"refresh_token"`
-	AccessType     string           `db:"access_type"`
-	CreatedAt      pgtype.Timestamp `db:"created_at"`
-	UpdatedAt      pgtype.Timestamp `db:"updated_at"`
-	Scopes         []string         `db:"scopes"`
+	ID             int32
+	UserID         int32
+	Provider       string
+	ProviderUserID string
+	AccessToken    string
+	RefreshToken   string
+	AccessType     string
+	CreatedAt      time.Time
+	UpdatedAt      time.Time
+	Scopes         []string
 }
 
 type AuthSession struct {
-	Status     AuthSessionStatus `db:"status"`
-	Token      string            `db:"token"`
-	UserID     int32             `db:"user_id"`
-	CreatedAt  pgtype.Timestamp  `db:"created_at"`
-	LastUsedAt pgtype.Timestamp  `db:"last_used_at"`
+	Status     AuthSessionStatus
+	Token      string
+	UserID     int32
+	CreatedAt  time.Time
+	LastUsedAt time.Time
 }
 
 type TwitchBot struct {
-	UserID       int32         `db:"user_id"`
-	TwitchUserID string        `db:"twitch_user_id"`
-	Role         TwitchBotRole `db:"role"`
+	UserID       int32
+	TwitchUserID string
+	Role         TwitchBotRole
 }
 
 type TwitchDefaultBot struct {
-	Main         bool   `db:"main"`
-	TwitchUserID string `db:"twitch_user_id"`
+	Main         bool
+	TwitchUserID string
 }
 
 type TwitchDefaultBroadcaster struct {
-	Main         bool   `db:"main"`
-	TwitchUserID string `db:"twitch_user_id"`
+	Main         bool
+	TwitchUserID string
+}
+
+type TwitchSelectedBot struct {
+	UserID       int32
+	TwitchUserID string
+	CreatedAt    time.Time
+	UpdatedAt    time.Time
 }
 
 type TwitchUser struct {
-	ID              string           `db:"id"`
-	Username        string           `db:"username"`
-	DisplayName     string           `db:"display_name"`
-	Type            string           `db:"type"`
-	BroadcasterType string           `db:"broadcaster_type"`
-	ProfileImageUrl string           `db:"profile_image_url"`
-	CreatedAt       pgtype.Timestamp `db:"created_at"`
-	AuthProviderID  *int32           `db:"auth_provider_id"`
+	ID              string
+	Username        string
+	DisplayName     string
+	Type            string
+	BroadcasterType string
+	ProfileImageUrl string
+	CreatedAt       time.Time
+	AuthProviderID  *int32
 }
 
 type TwitchWebhook struct {
-	Event         string           `db:"event"`
-	Secret        string           `db:"secret"`
-	Callback      string           `db:"callback"`
-	UserID        int32            `db:"user_id"`
-	BroadcasterID string           `db:"broadcaster_id"`
-	BotID         string           `db:"bot_id"`
-	CreatedAt     pgtype.Timestamp `db:"created_at"`
-	UpdatedAt     pgtype.Timestamp `db:"updated_at"`
+	Event              string
+	Callback           string
+	UserID             int32
+	BroadcasterID      string
+	BotID              string
+	CreatedAt          time.Time
+	UpdatedAt          time.Time
+	SubscriptionID     string
+	Status             TwitchWebhookStatus
+	SubscriptionStatus string
 }
 
 type User struct {
-	ID        int32            `db:"id"`
-	Username  string           `db:"username"`
-	Status    UserStatus       `db:"status"`
-	CreatedAt pgtype.Timestamp `db:"created_at"`
-	UpdatedAt pgtype.Timestamp `db:"updated_at"`
+	ID        int32
+	Username  string
+	Status    UserStatus
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }

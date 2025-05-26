@@ -7,8 +7,7 @@ package db
 
 import (
 	"context"
-
-	"github.com/jackc/pgx/v5/pgtype"
+	"time"
 )
 
 const twitchUserConnectProvider = `-- name: TwitchUserConnectProvider :execrows
@@ -19,8 +18,8 @@ WHERE id = $2
 `
 
 type TwitchUserConnectProviderParams struct {
-	AuthProviderID *int32 `db:"auth_provider_id"`
-	ID             string `db:"id"`
+	AuthProviderID *int32
+	ID             string
 }
 
 func (q *Queries) TwitchUserConnectProvider(ctx context.Context, arg TwitchUserConnectProviderParams) (int64, error) {
@@ -52,13 +51,13 @@ $7
 `
 
 type TwitchUserCreateParams struct {
-	ID              string           `db:"id"`
-	Username        string           `db:"username"`
-	DisplayName     string           `db:"display_name"`
-	Type            string           `db:"type"`
-	BroadcasterType string           `db:"broadcaster_type"`
-	ProfileImageUrl string           `db:"profile_image_url"`
-	CreatedAt       pgtype.Timestamp `db:"created_at"`
+	ID              string
+	Username        string
+	DisplayName     string
+	Type            string
+	BroadcasterType string
+	ProfileImageUrl string
+	CreatedAt       time.Time
 }
 
 func (q *Queries) TwitchUserCreate(ctx context.Context, arg TwitchUserCreateParams) (string, error) {

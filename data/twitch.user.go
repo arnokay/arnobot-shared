@@ -3,8 +3,6 @@ package data
 import (
 	"time"
 
-	"github.com/jackc/pgx/v5/pgtype"
-
 	"arnobot-shared/db"
 )
 
@@ -37,9 +35,6 @@ func (u TwitchUserCreate) ToDB() db.TwitchUserCreateParams {
 		Type:            u.Type,
 		BroadcasterType: u.BroadcasterType,
 		ProfileImageUrl: u.ProfileImageUrl,
-		CreatedAt: pgtype.Timestamp{
-			Time:  u.CreatedAt,
-			Valid: !u.CreatedAt.IsZero(),
-		},
+		CreatedAt:       u.CreatedAt,
 	}
 }

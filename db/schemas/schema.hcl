@@ -294,7 +294,44 @@ enum "twitch" "bot_role" {
   ]
 }
 
-table "twitch" "bot" {
+table "twitch" "selected_bots" {
+  schema = schema.twitch
+
+  column "user_id" {
+    type = int
+    null = false
+  }
+
+  column "twitch_user_id" {
+    type = text
+    null = false
+  }
+
+  column "created_at" {
+    type = timestamp
+    null = false
+    default = sql("CURRENT_TIMESTAMP")
+  }
+
+  column "updated_at" {
+    type = timestamp
+    null = false
+    default = sql("CURRENT_TIMESTAMP")
+  }
+
+  unique "user_id" {
+    columns = [column.user_id]
+  }
+
+  foreign_key "twitch_bot" { 
+    columns = [column.user_id, column.twitch_user_id]
+    ref_columns = [table.twitch.bots.column.user_id, table.twitch.bots.column.twitch_user_id]
+    on_update = CASCADE
+    on_delete = RESTRICT
+  }
+}
+
+table "twitch" "bots" {
   schema = schema.twitch
 
   column "user_id" {
@@ -332,15 +369,23 @@ table "twitch" "bot" {
   }
 }
 
+enum "twitch" "webhook_status" {
+  schema = schema.twitch
+  values = [
+  "active",
+  "deactivated" 
+  ]
+}
+
 table "twitch" "webhooks" {
   schema = schema.twitch
 
-  column "event" {
+  column "subscription_id" {
     type = text
     null = false
   }
 
-  column "secret" {
+  column "event" {
     type = text
     null = false
   }
@@ -365,6 +410,17 @@ table "twitch" "webhooks" {
     null = false
   }
 
+  column "status" {
+    type = enum.twitch.webhook_status
+    null = false
+    default = "active"
+  }
+
+  column "subscription_status" {
+    type = text
+    null = false
+  }
+
   column "created_at" {
     type = timestamp
     null = false
@@ -377,15 +433,12 @@ table "twitch" "webhooks" {
     default = sql("CURRENT_TIMESTAMP")
   }
 
-  foreign_key "broadcaster_id" {
-    columns = [column.broadcaster_id]
-    ref_columns = [table.twitch.users.column.id]
-    on_update = CASCADE
-    on_delete = RESTRICT
+  primary_key {
+    columns = [column.subscription_id]
   }
 
-  foreign_key "bot_id" {
-    columns = [column.bot_id]
+  foreign_key "broadcaster_id" {
+    columns = [column.broadcaster_id]
     ref_columns = [table.twitch.users.column.id]
     on_update = CASCADE
     on_delete = RESTRICT
@@ -400,7 +453,7 @@ table "twitch" "webhooks" {
 
   foreign_key "user_bot_account" {
     columns = [column.user_id, column.bot_id]
-    ref_columns = [table.twitch.bot.column.user_id, table.twitch.bot.column.twitch_user_id]
+    ref_columns = [table.twitch.bots.column.user_id, table.twitch.bots.column.twitch_user_id]
     on_update = CASCADE
     on_delete = RESTRICT
   }

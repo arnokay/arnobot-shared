@@ -85,8 +85,7 @@ func (hm *HelixManager) GetByProvider(ctx context.Context, provider data.AuthPro
 
 	client.OnUserAccessTokenRefreshed(func(newAccessToken, newRefreshToken string) {
 		hm.logger.InfoContext(ctx, "token refreshed", "providerUserID", provider.ProviderUserID)
-		err := hm.authModuleService.AuthProviderUpdateTokens(ctx, data.AuthProviderUpdateTokens{
-			ID:           int(provider.ID),
+		err := hm.authModuleService.AuthProviderUpdateTokens(ctx, provider.ID, data.AuthProviderUpdateTokens{
 			AccessToken:  newAccessToken,
 			RefreshToken: &newRefreshToken,
 		})

@@ -10,6 +10,11 @@ type (
 	AuthProviderGetRequest  = Request[data.AuthProviderGet]
 	AuthProviderGetResponse = Response[*data.AuthProvider]
 
-	AuthProviderUpdateTokensRequest  = Request[data.AuthProviderUpdateTokens]
+	AuthProviderUpdateTokensRequest  = Request[AuthProviderUpdateTokensPayload]
 	AuthProviderUpdateTokensResponse = Response[bool]
 )
+
+type AuthProviderUpdateTokensPayload struct {
+	ID   int32
+	Data data.AuthProviderUpdateTokens
+}

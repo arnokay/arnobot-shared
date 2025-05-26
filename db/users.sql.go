@@ -10,11 +10,11 @@ import (
 )
 
 const userCreate = `-- name: UserCreate :one
-INSERT INTO users DEFAULT VALUES RETURNING id
+INSERT INTO users (username) VALUES ($1) RETURNING id
 `
 
-func (q *Queries) UserCreate(ctx context.Context) (int32, error) {
-	row := q.db.QueryRow(ctx, userCreate)
+func (q *Queries) UserCreate(ctx context.Context, username string) (int32, error) {
+	row := q.db.QueryRow(ctx, userCreate, username)
 	var id int32
 	err := row.Scan(&id)
 	return id, err
@@ -55,17 +55,19 @@ func (q *Queries) UserGetById(ctx context.Context, id int32) (User, error) {
 const userUpdate = `-- name: UserUpdate :execrows
 UPDATE users
 SET
-username = COALESCE($2, username)
+username = COALESCE($2, username),
+status = COALESCE($3, status)
 WHERE id = $1
 `
 
 type UserUpdateParams struct {
-	ID       int32   `db:"id"`
-	Username *string `db:"username"`
+	ID       int32
+	Username *string
+	Status   NullUserStatus
 }
 
 func (q *Queries) UserUpdate(ctx context.Context, arg UserUpdateParams) (int64, error) {
-	result, err := q.db.Exec(ctx, userUpdate, arg.ID, arg.Username)
+	result, err := q.db.Exec(ctx, userUpdate, arg.ID, arg.Username, arg.Status)
 	if err != nil {
 		return 0, err
 	}

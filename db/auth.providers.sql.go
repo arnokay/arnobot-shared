@@ -30,13 +30,13 @@ INSERT INTO auth.providers (
 `
 
 type AuthProviderCreateParams struct {
-	UserID         int32    `db:"user_id"`
-	ProviderUserID string   `db:"provider_user_id"`
-	Provider       string   `db:"provider"`
-	AccessToken    string   `db:"access_token"`
-	RefreshToken   string   `db:"refresh_token"`
-	AccessType     string   `db:"access_type"`
-	Scopes         []string `db:"scopes"`
+	UserID         int32
+	ProviderUserID string
+	Provider       string
+	AccessToken    string
+	RefreshToken   string
+	AccessType     string
+	Scopes         []string
 }
 
 func (q *Queries) AuthProviderCreate(ctx context.Context, arg AuthProviderCreateParams) (int32, error) {
@@ -61,8 +61,8 @@ WHERE id = $1 AND provider = $2
 `
 
 type AuthProviderGetByIdParams struct {
-	ID       int32  `db:"id"`
-	Provider string `db:"provider"`
+	ID       int32
+	Provider string
 }
 
 func (q *Queries) AuthProviderGetById(ctx context.Context, arg AuthProviderGetByIdParams) (AuthProvider, error) {
@@ -90,8 +90,8 @@ WHERE provider_user_id = $1 AND provider = $2
 `
 
 type AuthProviderGetByProviderUserIdParams struct {
-	ProviderUserID string `db:"provider_user_id"`
-	Provider       string `db:"provider"`
+	ProviderUserID string
+	Provider       string
 }
 
 func (q *Queries) AuthProviderGetByProviderUserId(ctx context.Context, arg AuthProviderGetByProviderUserIdParams) (AuthProvider, error) {
@@ -119,8 +119,8 @@ WHERE user_id = $1 AND provider = $2
 `
 
 type AuthProviderGetByUserIdParams struct {
-	UserID   int32  `db:"user_id"`
-	Provider string `db:"provider"`
+	UserID   int32
+	Provider string
 }
 
 func (q *Queries) AuthProviderGetByUserId(ctx context.Context, arg AuthProviderGetByUserIdParams) (AuthProvider, error) {
@@ -151,9 +151,9 @@ WHERE id = $2
 `
 
 type AuthProviderUpdateTokensParams struct {
-	AccessToken  string  `db:"access_token"`
-	ID           int32   `db:"id"`
-	RefreshToken *string `db:"refresh_token"`
+	AccessToken  string
+	ID           int32
+	RefreshToken *string
 }
 
 // refresh_token = COALESCE($2, refresh_token),

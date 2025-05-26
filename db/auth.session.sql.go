@@ -102,7 +102,7 @@ WHERE token = $1
 `
 
 type AuthSessionGetOwnerRow struct {
-	User User `db:"user"`
+	User User
 }
 
 func (q *Queries) AuthSessionGetOwner(ctx context.Context, token string) (AuthSessionGetOwnerRow, error) {
