@@ -27,7 +27,7 @@ type Querier interface {
 	TwitchDefaultBotUpdate(ctx context.Context, twitchUserID string) (int64, error)
 	TwitchDefaultBroadcasterGet(ctx context.Context) (TwitchDefaultBroadcaster, error)
 	TwitchDefaultBroadcasterUpdate(ctx context.Context, twitchUserID string) (int64, error)
-	TwitchSelectedBotCreateOrUpdate(ctx context.Context, arg TwitchSelectedBotCreateOrUpdateParams) (int32, error)
+	TwitchSelectedBotChange(ctx context.Context, arg TwitchSelectedBotChangeParams) (int64, error)
 	TwitchSelectedBotGet(ctx context.Context, userID int32) (TwitchSelectedBot, error)
 	TwitchUserConnectProvider(ctx context.Context, arg TwitchUserConnectProviderParams) (int64, error)
 	TwitchUserCreate(ctx context.Context, arg TwitchUserCreateParams) (string, error)

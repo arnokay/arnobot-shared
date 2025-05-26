@@ -1,12 +1,19 @@
 package data
 
 import (
-	"arnobot-shared/db"
 	"time"
+
+	"arnobot-shared/db"
 )
 
 type TwitchDefaultBot struct {
 	TwitchUserID string
+}
+
+func NewTwitchDefaultBotFromDB(fromDB db.TwitchDefaultBot) TwitchDefaultBot {
+	return TwitchDefaultBot{
+		TwitchUserID: fromDB.TwitchUserID,
+	}
 }
 
 type TwitchSelectedBot struct {
@@ -16,9 +23,12 @@ type TwitchSelectedBot struct {
 	UpdatedAt    time.Time
 }
 
-func NewTwitchDefaultBotFromDB(fromDB db.TwitchDefaultBot) TwitchDefaultBot {
-	return TwitchDefaultBot{
+func NewTwitchSelectedBotFromDB(fromDB db.TwitchSelectedBot) TwitchSelectedBot {
+	return TwitchSelectedBot{
+		UserID:       fromDB.UserID,
 		TwitchUserID: fromDB.TwitchUserID,
+		CreatedAt:    fromDB.CreatedAt,
+		UpdatedAt:    fromDB.UpdatedAt,
 	}
 }
 

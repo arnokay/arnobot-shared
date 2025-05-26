@@ -9,26 +9,26 @@ import (
 	"context"
 )
 
-const twitchSelectedBotCreateOrUpdate = `-- name: TwitchSelectedBotCreateOrUpdate :one
+const twitchSelectedBotChange = `-- name: TwitchSelectedBotChange :execrows
 INSERT INTO twitch.selected_bots (user_id, twitch_user_id)
 VALUES ($1, $2)
 ON CONFLICT (user_id) DO UPDATE
   SET 
   twitch_user_id = $2,
   updated_at = CURRENT_TIMESTAMP
-RETURNING user_id
 `
 
-type TwitchSelectedBotCreateOrUpdateParams struct {
+type TwitchSelectedBotChangeParams struct {
 	UserID       int32
 	TwitchUserID string
 }
 
-func (q *Queries) TwitchSelectedBotCreateOrUpdate(ctx context.Context, arg TwitchSelectedBotCreateOrUpdateParams) (int32, error) {
-	row := q.db.QueryRow(ctx, twitchSelectedBotCreateOrUpdate, arg.UserID, arg.TwitchUserID)
-	var user_id int32
-	err := row.Scan(&user_id)
-	return user_id, err
+func (q *Queries) TwitchSelectedBotChange(ctx context.Context, arg TwitchSelectedBotChangeParams) (int64, error) {
+	result, err := q.db.Exec(ctx, twitchSelectedBotChange, arg.UserID, arg.TwitchUserID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const twitchSelectedBotGet = `-- name: TwitchSelectedBotGet :one

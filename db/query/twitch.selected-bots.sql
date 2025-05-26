@@ -1,11 +1,10 @@
--- name: TwitchSelectedBotCreateOrUpdate :one
+-- name: TwitchSelectedBotChange :execrows
 INSERT INTO twitch.selected_bots (user_id, twitch_user_id)
 VALUES ($1, $2)
 ON CONFLICT (user_id) DO UPDATE
   SET 
   twitch_user_id = $2,
-  updated_at = CURRENT_TIMESTAMP
-RETURNING user_id;
+  updated_at = CURRENT_TIMESTAMP;
 
 -- name: TwitchSelectedBotGet :one
 SELECT *
