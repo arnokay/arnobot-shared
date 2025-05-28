@@ -54,19 +54,23 @@ func (q *Queries) AuthProviderCreate(ctx context.Context, arg AuthProviderCreate
 	return id, err
 }
 
-const authProviderGetById = `-- name: AuthProviderGetById :one
+const authProviderGet = `-- name: AuthProviderGet :one
 SELECT id, user_id, provider, provider_user_id, access_token, refresh_token, access_type, created_at, updated_at, scopes
 FROM auth.providers
-WHERE id = $1 AND provider = $2
+WHERE 
+($2::int IS NULL OR user_id = $2::int) AND
+($3::text IS NULL OR provider_user_id = $3::text) AND
+provider = $1
 `
 
-type AuthProviderGetByIdParams struct {
-	ID       int32
-	Provider string
+type AuthProviderGetParams struct {
+	Provider       string
+	UserID         *int32
+	ProviderUserID *string
 }
 
-func (q *Queries) AuthProviderGetById(ctx context.Context, arg AuthProviderGetByIdParams) (AuthProvider, error) {
-	row := q.db.QueryRow(ctx, authProviderGetById, arg.ID, arg.Provider)
+func (q *Queries) AuthProviderGet(ctx context.Context, arg AuthProviderGetParams) (AuthProvider, error) {
+	row := q.db.QueryRow(ctx, authProviderGet, arg.Provider, arg.UserID, arg.ProviderUserID)
 	var i AuthProvider
 	err := row.Scan(
 		&i.ID,

@@ -10,7 +10,7 @@ import (
 
 type Querier interface {
 	AuthProviderCreate(ctx context.Context, arg AuthProviderCreateParams) (int32, error)
-	AuthProviderGetById(ctx context.Context, arg AuthProviderGetByIdParams) (AuthProvider, error)
+	AuthProviderGet(ctx context.Context, arg AuthProviderGetParams) (AuthProvider, error)
 	AuthProviderGetByProviderUserId(ctx context.Context, arg AuthProviderGetByProviderUserIdParams) (AuthProvider, error)
 	AuthProviderGetByUserId(ctx context.Context, arg AuthProviderGetByUserIdParams) (AuthProvider, error)
 	// refresh_token = COALESCE($2, refresh_token),

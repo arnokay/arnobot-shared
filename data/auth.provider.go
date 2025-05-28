@@ -83,13 +83,15 @@ type AuthProviderUpdate struct {
 }
 
 type AuthProviderGet struct {
-	ProviderUserID string
+	ProviderUserID *string
+	UserID         *int32
 	Provider       string
 }
 
-func (p AuthProviderGet) ToDB() db.AuthProviderGetByProviderUserIdParams {
-	return db.AuthProviderGetByProviderUserIdParams{
+func (p AuthProviderGet) ToDB() db.AuthProviderGetParams {
+	return db.AuthProviderGetParams{
 		ProviderUserID: p.ProviderUserID,
+		UserID:         p.UserID,
 		Provider:       p.Provider,
 	}
 }
