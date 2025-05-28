@@ -30,10 +30,10 @@ func ErrHandler(err error, c echo.Context) {
 	status := http.StatusInternalServerError
   responseErr := errs.ErrInternal
 
-	var appErr *errs.AppError
+	var appErr errs.AppError
 	if errors.As(err, &appErr) {
 		status = errs.ToHTTPStatus(appErr)
-    responseErr = *appErr
+    responseErr = appErr
 	} else {
 		if he, ok := err.(*echo.HTTPError); ok {
 			status = he.Code

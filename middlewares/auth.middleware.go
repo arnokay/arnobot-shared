@@ -76,7 +76,7 @@ func (m *AuthMiddlewares) SessionGetOwner(next echo.HandlerFunc) echo.HandlerFun
 			return next(c)
 		}
 
-    ctx := appctx.SetUser(c.Request().Context(), user)
+		ctx := appctx.SetUser(c.Request().Context(), user)
 		c.SetRequest(c.Request().WithContext(ctx))
 
 		return next(c)
