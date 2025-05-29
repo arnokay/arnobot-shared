@@ -1,8 +1,8 @@
 -- name: TwitchDefaultBotUpdate :execrows
-INSERT INTO twitch.default_bot (main, twitch_user_id)
+INSERT INTO twitch.default_bot (main, bot_id)
 VALUES (true, $1)
 ON CONFLICT (main) DO UPDATE
-  SET twitch_user_id = $1;
+  SET bot_id = $1;
 
 -- name: TwitchDefaultBotGet :one
 SELECT *

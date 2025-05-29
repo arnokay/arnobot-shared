@@ -1,7 +1,7 @@
 -- name: AuthSessionValidate :one
 UPDATE auth.sessions
 SET
-last_seen_at = CURRENT_TIMESTAMP
+last_used_at = CURRENT_TIMESTAMP
 WHERE token = $1
 RETURNING status;
 
@@ -30,5 +30,5 @@ WHERE user_id = $1 AND status = 'active';
 -- name: AuthSessionGetOwner :one
 SELECT sqlc.embed(pUsers)
 FROM auth.sessions
-LEFT JOIN public.users as pUsers ON auth.sessions.user_id = public.users.id
+LEFT JOIN public.users as pUsers ON auth.sessions.user_id = pUsers.id
 WHERE token = $1;

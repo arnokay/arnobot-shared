@@ -12,23 +12,31 @@ import (
 const twitchBotCreate = `-- name: TwitchBotCreate :one
 INSERT INTO twitch.bots (
   user_id,
-  twitch_user_id 
+  broadcaster_id,
+  bot_id
 ) VALUES (
   $1,
-  $2
-) RETURNING user_id
+  $2,
+  $3
+) RETURNING user_id, bot_id, role, broadcaster_id
 `
 
 type TwitchBotCreateParams struct {
-	UserID       int32
-	TwitchUserID string
+	UserID        int32
+	BroadcasterID string
+	BotID         string
 }
 
-func (q *Queries) TwitchBotCreate(ctx context.Context, arg TwitchBotCreateParams) (int32, error) {
-	row := q.db.QueryRow(ctx, twitchBotCreate, arg.UserID, arg.TwitchUserID)
-	var user_id int32
-	err := row.Scan(&user_id)
-	return user_id, err
+func (q *Queries) TwitchBotCreate(ctx context.Context, arg TwitchBotCreateParams) (TwitchBot, error) {
+	row := q.db.QueryRow(ctx, twitchBotCreate, arg.UserID, arg.BroadcasterID, arg.BotID)
+	var i TwitchBot
+	err := row.Scan(
+		&i.UserID,
+		&i.BotID,
+		&i.Role,
+		&i.BroadcasterID,
+	)
+	return i, err
 }
 
 const twitchBotDelete = `-- name: TwitchBotDelete :execrows
@@ -42,4 +50,68 @@ func (q *Queries) TwitchBotDelete(ctx context.Context, userID int32) (int64, err
 		return 0, err
 	}
 	return result.RowsAffected(), nil
+}
+
+const twitchBotGet = `-- name: TwitchBotGet :one
+SELECT user_id, bot_id, role, broadcaster_id
+FROM twitch.bots
+WHERE
+user_id = $1 AND bot_id = $2
+`
+
+type TwitchBotGetParams struct {
+	UserID int32
+	BotID  string
+}
+
+func (q *Queries) TwitchBotGet(ctx context.Context, arg TwitchBotGetParams) (TwitchBot, error) {
+	row := q.db.QueryRow(ctx, twitchBotGet, arg.UserID, arg.BotID)
+	var i TwitchBot
+	err := row.Scan(
+		&i.UserID,
+		&i.BotID,
+		&i.Role,
+		&i.BroadcasterID,
+	)
+	return i, err
+}
+
+const twitchBotsGet = `-- name: TwitchBotsGet :many
+SELECT user_id, bot_id, role, broadcaster_id
+FROM twitch.bots
+WHERE 
+($1::int IS NULL OR user_id = $1) AND
+($2::text IS NULL OR broadcaster_id = $2) AND
+($3::text IS NULL OR bot_id = $3)
+`
+
+type TwitchBotsGetParams struct {
+	UserID        *int32
+	BroadcasterID *string
+	BotID         *string
+}
+
+func (q *Queries) TwitchBotsGet(ctx context.Context, arg TwitchBotsGetParams) ([]TwitchBot, error) {
+	rows, err := q.db.Query(ctx, twitchBotsGet, arg.UserID, arg.BroadcasterID, arg.BotID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []TwitchBot
+	for rows.Next() {
+		var i TwitchBot
+		if err := rows.Scan(
+			&i.UserID,
+			&i.BotID,
+			&i.Role,
+			&i.BroadcasterID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }

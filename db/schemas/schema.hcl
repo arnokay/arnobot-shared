@@ -267,20 +267,13 @@ table "twitch" "default_bot" {
     default = true
   }
 
-  column "twitch_user_id" {
+  column "bot_id" {
     type = text
     null = false
   }
 
   primary_key {
     columns = [column.main]
-  }
-
-  foreign_key "twitch_user_id" {
-    columns = [column.twitch_user_id]
-    ref_columns = [table.twitch.users.column.id]
-    on_update = CASCADE
-    on_delete = RESTRICT
   }
 }
 
@@ -301,8 +294,13 @@ table "twitch" "selected_bots" {
     type = int
     null = false
   }
+  
+  column "broadcaster_id" {
+    type = text
+    null = false
+  }
 
-  column "twitch_user_id" {
+  column "bot_id" {
     type = text
     null = false
   }
@@ -324,8 +322,8 @@ table "twitch" "selected_bots" {
   }
 
   foreign_key "twitch_bot" { 
-    columns = [column.user_id, column.twitch_user_id]
-    ref_columns = [table.twitch.bots.column.user_id, table.twitch.bots.column.twitch_user_id]
+    columns = [column.user_id, column.bot_id]
+    ref_columns = [table.twitch.bots.column.user_id, table.twitch.bots.column.bot_id]
     on_update = CASCADE
     on_delete = RESTRICT
   }
@@ -337,9 +335,14 @@ table "twitch" "bots" {
   column "user_id" {
     type = int
     null = false
-  } 
+  }
 
-  column "twitch_user_id" {
+  column "broadcaster_id" {
+    type = text
+    null = false
+  }
+
+  column "bot_id" {
     type = text
     null = false
   }
@@ -351,14 +354,7 @@ table "twitch" "bots" {
   }
 
   primary_key {
-    columns = [column.user_id, column.twitch_user_id]
-  }
-
-  foreign_key "twitch_user_id" {
-    columns = [column.twitch_user_id]
-    ref_columns = [table.twitch.users.column.id]
-    on_update = CASCADE
-    on_delete = RESTRICT
+    columns = [column.user_id, column.bot_id]
   }
 
   foreign_key "user_id" {
@@ -453,7 +449,7 @@ table "twitch" "webhooks" {
 
   foreign_key "user_bot_account" {
     columns = [column.user_id, column.bot_id]
-    ref_columns = [table.twitch.bots.column.user_id, table.twitch.bots.column.twitch_user_id]
+    ref_columns = [table.twitch.bots.column.user_id, table.twitch.bots.column.bot_id]
     on_update = CASCADE
     on_delete = RESTRICT
   }

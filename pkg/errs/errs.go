@@ -58,7 +58,7 @@ func (e AppError) Unwrap() error {
 }
 
 func ToHTTPStatus(err error) int {
-	var appErr *AppError
+	var appErr AppError
 	if errors.As(err, &appErr) {
 		switch appErr.Code {
 		case CodeAlreadyExists:
@@ -82,4 +82,9 @@ func ToHTTPStatus(err error) int {
 		}
 	}
 	return http.StatusInternalServerError
+}
+
+func IsAppErr(err error) bool {
+	var appErr AppError
+	return errors.As(err, &appErr)
 }

@@ -204,14 +204,15 @@ type AuthSession struct {
 }
 
 type TwitchBot struct {
-	UserID       int32
-	TwitchUserID string
-	Role         TwitchBotRole
+	UserID        int32
+	BotID         string
+	Role          TwitchBotRole
+	BroadcasterID string
 }
 
 type TwitchDefaultBot struct {
-	Main         bool
-	TwitchUserID string
+	Main  bool
+	BotID string
 }
 
 type TwitchDefaultBroadcaster struct {
@@ -220,10 +221,11 @@ type TwitchDefaultBroadcaster struct {
 }
 
 type TwitchSelectedBot struct {
-	UserID       int32
-	TwitchUserID string
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
+	UserID        int32
+	BotID         string
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
+	BroadcasterID string
 }
 
 type TwitchUser struct {

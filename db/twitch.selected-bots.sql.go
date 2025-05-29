@@ -9,42 +9,70 @@ import (
 	"context"
 )
 
-const twitchSelectedBotChange = `-- name: TwitchSelectedBotChange :execrows
-INSERT INTO twitch.selected_bots (user_id, twitch_user_id)
-VALUES ($1, $2)
+const twitchSelectedBotChange = `-- name: TwitchSelectedBotChange :one
+INSERT INTO twitch.selected_bots (user_id, bot_id, broadcaster_id)
+VALUES ($1, $2, $3)
 ON CONFLICT (user_id) DO UPDATE
   SET 
-  twitch_user_id = $2,
+  bot_id = $2,
+  broadcaster_id = $3,
   updated_at = CURRENT_TIMESTAMP
+  RETURNING user_id, bot_id, created_at, updated_at, broadcaster_id
 `
 
 type TwitchSelectedBotChangeParams struct {
-	UserID       int32
-	TwitchUserID string
+	UserID        int32
+	BotID         string
+	BroadcasterID string
 }
 
-func (q *Queries) TwitchSelectedBotChange(ctx context.Context, arg TwitchSelectedBotChangeParams) (int64, error) {
-	result, err := q.db.Exec(ctx, twitchSelectedBotChange, arg.UserID, arg.TwitchUserID)
-	if err != nil {
-		return 0, err
-	}
-	return result.RowsAffected(), nil
+func (q *Queries) TwitchSelectedBotChange(ctx context.Context, arg TwitchSelectedBotChangeParams) (TwitchSelectedBot, error) {
+	row := q.db.QueryRow(ctx, twitchSelectedBotChange, arg.UserID, arg.BotID, arg.BroadcasterID)
+	var i TwitchSelectedBot
+	err := row.Scan(
+		&i.UserID,
+		&i.BotID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.BroadcasterID,
+	)
+	return i, err
 }
 
-const twitchSelectedBotGet = `-- name: TwitchSelectedBotGet :one
-SELECT user_id, twitch_user_id, created_at, updated_at
+const twitchSelectedBotGetByBroadcasterID = `-- name: TwitchSelectedBotGetByBroadcasterID :one
+SELECT user_id, bot_id, created_at, updated_at, broadcaster_id
+FROM twitch.selected_bots
+WHERE broadcaster_id = $1
+`
+
+func (q *Queries) TwitchSelectedBotGetByBroadcasterID(ctx context.Context, broadcasterID string) (TwitchSelectedBot, error) {
+	row := q.db.QueryRow(ctx, twitchSelectedBotGetByBroadcasterID, broadcasterID)
+	var i TwitchSelectedBot
+	err := row.Scan(
+		&i.UserID,
+		&i.BotID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.BroadcasterID,
+	)
+	return i, err
+}
+
+const twitchSelectedBotGetByUserID = `-- name: TwitchSelectedBotGetByUserID :one
+SELECT user_id, bot_id, created_at, updated_at, broadcaster_id
 FROM twitch.selected_bots
 WHERE user_id = $1
 `
 
-func (q *Queries) TwitchSelectedBotGet(ctx context.Context, userID int32) (TwitchSelectedBot, error) {
-	row := q.db.QueryRow(ctx, twitchSelectedBotGet, userID)
+func (q *Queries) TwitchSelectedBotGetByUserID(ctx context.Context, userID int32) (TwitchSelectedBot, error) {
+	row := q.db.QueryRow(ctx, twitchSelectedBotGetByUserID, userID)
 	var i TwitchSelectedBot
 	err := row.Scan(
 		&i.UserID,
-		&i.TwitchUserID,
+		&i.BotID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.BroadcasterID,
 	)
 	return i, err
 }

@@ -109,6 +109,7 @@ func (s *AuthModuleService) AuthProviderGet(ctx context.Context, data data.AuthP
 	}
 
 	if !res.Success {
+    s.logger.DebugContext(ctx, "unsuccessful request for auth provider", "err", res.Error)
 		return nil, errs.New(res.Code, res.Error, nil)
 	}
 

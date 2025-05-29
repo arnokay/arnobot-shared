@@ -97,7 +97,7 @@ func (q *Queries) AuthSessionGet(ctx context.Context, token string) (AuthSession
 const authSessionGetOwner = `-- name: AuthSessionGetOwner :one
 SELECT pusers.id, pusers.username, pusers.status, pusers.created_at, pusers.updated_at
 FROM auth.sessions
-LEFT JOIN public.users as pUsers ON auth.sessions.user_id = public.users.id
+LEFT JOIN public.users as pUsers ON auth.sessions.user_id = pUsers.id
 WHERE token = $1
 `
 
@@ -121,7 +121,7 @@ func (q *Queries) AuthSessionGetOwner(ctx context.Context, token string) (AuthSe
 const authSessionValidate = `-- name: AuthSessionValidate :one
 UPDATE auth.sessions
 SET
-last_seen_at = CURRENT_TIMESTAMP
+last_used_at = CURRENT_TIMESTAMP
 WHERE token = $1
 RETURNING status
 `

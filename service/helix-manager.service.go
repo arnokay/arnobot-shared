@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 	"sync"
 
@@ -9,6 +10,7 @@ import (
 
 	"arnobot-shared/applog"
 	"arnobot-shared/data"
+	"arnobot-shared/pkg/assert"
 	"arnobot-shared/pkg/errs"
 )
 
@@ -29,10 +31,22 @@ type HelixManager struct {
 func NewHelixManager(authModuleSerivce *AuthModuleService, clientID, clientSecret string) *HelixManager {
 	logger := applog.NewServiceLogger("helix-manager")
 
-	appClient, _ := helix.NewClient(&helix.Options{
+	appClient, err := helix.NewClient(&helix.Options{
 		ClientID:     clientID,
 		ClientSecret: clientSecret,
 	})
+	assert.NoError(err, "helix client needs to be initialized")
+	
+  token, err := appClient.RequestAppAccessToken([]string{
+		"user:read:chat",
+		"user:write:chat",
+		"user:bot",
+		"channel:bot",
+		"bits:read",
+	})
+  assert.NoError(err, "cannot get access tokens for app client")
+  fmt.Println(token)
+  appClient.SetAppAccessToken(token.Data.AccessToken)
 
 	return &HelixManager{
 		logger:            logger,

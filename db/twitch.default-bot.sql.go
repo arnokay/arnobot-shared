@@ -10,7 +10,7 @@ import (
 )
 
 const twitchDefaultBotGet = `-- name: TwitchDefaultBotGet :one
-SELECT main, twitch_user_id
+SELECT main, bot_id
 FROM twitch.default_bot
 WHERE main = true
 `
@@ -18,19 +18,19 @@ WHERE main = true
 func (q *Queries) TwitchDefaultBotGet(ctx context.Context) (TwitchDefaultBot, error) {
 	row := q.db.QueryRow(ctx, twitchDefaultBotGet)
 	var i TwitchDefaultBot
-	err := row.Scan(&i.Main, &i.TwitchUserID)
+	err := row.Scan(&i.Main, &i.BotID)
 	return i, err
 }
 
 const twitchDefaultBotUpdate = `-- name: TwitchDefaultBotUpdate :execrows
-INSERT INTO twitch.default_bot (main, twitch_user_id)
+INSERT INTO twitch.default_bot (main, bot_id)
 VALUES (true, $1)
 ON CONFLICT (main) DO UPDATE
-  SET twitch_user_id = $1
+  SET bot_id = $1
 `
 
-func (q *Queries) TwitchDefaultBotUpdate(ctx context.Context, twitchUserID string) (int64, error) {
-	result, err := q.db.Exec(ctx, twitchDefaultBotUpdate, twitchUserID)
+func (q *Queries) TwitchDefaultBotUpdate(ctx context.Context, botID string) (int64, error) {
+	result, err := q.db.Exec(ctx, twitchDefaultBotUpdate, botID)
 	if err != nil {
 		return 0, err
 	}

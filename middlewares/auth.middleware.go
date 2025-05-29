@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"fmt"
 	"log/slog"
 	"strings"
 
@@ -31,13 +32,16 @@ func NewAuthMiddleware(
 func (m *AuthMiddlewares) UserSessionGuard(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		header := c.Request().Header.Get("Authorization")
+    fmt.Println("kek2")
 
 		if !strings.HasPrefix(header, "Session") {
+      m.logger.DebugContext(c.Request().Context(), "header has no session prefix")
 			return errs.ErrUnauthorized
 		}
 
 		parts := strings.SplitN(header, " ", 2)
 		if len(parts) != 2 {
+      m.logger.DebugContext(c.Request().Context(), "header has no token")
 			return errs.ErrUnauthorized
 		}
 
@@ -45,10 +49,12 @@ func (m *AuthMiddlewares) UserSessionGuard(next echo.HandlerFunc) echo.HandlerFu
 
 		valid, err := m.authModuleService.AuthSessionValidate(c.Request().Context(), sessionToken)
 		if err != nil {
+      m.logger.DebugContext(c.Request().Context(), "cannot get auth session validate", "err", err)
 			return errs.ErrUnauthorized
 		}
 
 		if !valid {
+      m.logger.DebugContext(c.Request().Context(), "token is not valid")
 			return errs.ErrUnauthorized
 		}
 
@@ -59,9 +65,10 @@ func (m *AuthMiddlewares) UserSessionGuard(next echo.HandlerFunc) echo.HandlerFu
 func (m *AuthMiddlewares) SessionGetOwner(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		header := c.Request().Header.Get("Authorization")
+    fmt.Println("kek3")
 
 		if !strings.HasPrefix(header, "Session") {
-			return errs.ErrUnauthorized
+			return next(c)
 		}
 
 		parts := strings.SplitN(header, " ", 2)
