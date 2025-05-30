@@ -1,54 +1,18 @@
 package events
 
-import "strings"
+type EventMessage struct {
+	Platform string `json:"platform"`
+	BotID    string `json:"botId"`
 
-const (
-  defaultSeparator = "."
-)
+	MessageID string `json:"messageId"`
+	Message   string `json:"message"`
+	ReplyTo   string `json:"replyTo"`
 
-type Event struct {
-	Prefix    string
-	Event     string
-	Command   string
-	Separator string
-}
+	BroadcasterID    string `json:"broadcasterId"`
+	BroadcasterLogin string `json:"broadcasterLogin"`
+	BroadcasterName  string `json:"broadcasterName"`
 
-func (e *Event) Build() string {
-  eventParts := []string{}
-
-  if e.Separator == "" {
-    e.Separator = defaultSeparator
-  }
-
-  if e.Prefix != "" {
-    eventParts = append(eventParts, e.Prefix)
-  }
-
-  if e.Event != "" {
-    eventParts = append(eventParts, e.Event)
-  }
-
-  if e.Command != "" {
-    eventParts = append(eventParts, e.Command)
-  }
-
-  return strings.Join(eventParts, e.Separator)
-}
-
-type Emote struct {
-  EmoteID string
-  EmoteName string
-  Fragments [][]int
-}
-
-type SystemChatMessageEvent struct {
-  ChannelID string
-  ChannelLogin string
-  ChannelName string
-  ChatterID string
-  ChatterLogin string
-  ChatterName string
-  MessageID string
-  MessageText string
-  MessageEmotes []Emote
+	ChatterID    string `json:"chatterId"`
+	ChatterLogin string `json:"chatterLogin"`
+	ChatterName  string `json:"chatterName"`
 }
