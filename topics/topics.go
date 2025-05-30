@@ -20,11 +20,10 @@ const (
 
 // Twitch chat topics
 const (
-	TwitchChatMessageNotify = "twitch.chat.message.notify"
-	TwitchChatMessageSend   = "twitch.chat.message.send"
+	TwitchChatMessageSend = "twitch.chat.message.send"
 )
 
 // Core topics
-const(
-  CoreChatMessageNotify = "core.chat-message.notify"
+const (
+	CoreChatMessageNotify = "core.chat-message.notify"
 )
