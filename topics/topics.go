@@ -23,3 +23,8 @@ const (
 	TwitchChatMessageNotify = "twitch.chat.message.notify"
 	TwitchChatMessageSend   = "twitch.chat.message.send"
 )
+
+// Core topics
+const(
+  CoreChatMessageNotify = "core.chat-message.notify"
+)
