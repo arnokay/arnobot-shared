@@ -1,5 +1,7 @@
 env "local" {
-  src = "file://db/schemas"
+  src = "file://db/schemas/schema.sql"
+
+  format = "sql"
 
   url = getenv("DB_DSN")
 
@@ -12,6 +14,8 @@ env "local" {
 
 env "staging" {
   src = "file://db/schemas"
+
+  format = "sql"
 
   url = getenv("DB_DSN_STAGING")
 
