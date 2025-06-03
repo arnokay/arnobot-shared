@@ -4,6 +4,66 @@ schema "twitch" {}
 schema "secret" {}
 schema "core" {}
 
+table "public" "supported_platforms" {
+  schema = schema.public
+
+  column "platform" {
+    type = text
+    null = false
+  }
+
+  primary_key {
+    columns = [column.platform]
+  }
+}
+
+table "public" "user_platform_accounts" {
+  schema = schema.public
+
+  column "platform" {
+    type = text
+    null = false
+  }
+
+  column "platform_user_id" {
+    type = text
+    null = false
+  }
+
+  column "platform_user_name" {
+    type = text
+    null = false
+  }
+
+  column "platform_user_login" {
+    type = text
+    null = false
+  }
+
+  column "user_id" {
+    type = int
+    null = false
+  }
+
+  primary_key {
+    columns = [column.platform, column.platform_user_id]
+  }
+
+  foreign_key "user_id" {
+    columns = [column.user_id]
+    ref_columns = [table.public.users.column.id]
+    on_update = CASCADE
+    on_delete = RESTRICT
+  }
+
+  foreign_key "platform" {
+    columns = [column.platform]
+    ref_columns = [table.public.supported_platforms.column.platform]
+    on_update = CASCADE
+    on_delete = RESTRICT
+  }
+}
+
 enum "user_status" {
   schema = schema.public
   values = [
