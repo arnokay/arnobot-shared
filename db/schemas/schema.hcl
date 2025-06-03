@@ -2,6 +2,7 @@ schema "public" {}
 schema "auth" {}
 schema "twitch" {}
 schema "secret" {}
+schema "core" {}
 
 enum "user_status" {
   schema = schema.public
@@ -452,5 +453,44 @@ table "twitch" "webhooks" {
     ref_columns = [table.twitch.bots.column.user_id, table.twitch.bots.column.bot_id]
     on_update = CASCADE
     on_delete = RESTRICT
+  }
+}
+
+table "core" "first_time_messages" {
+  schema = schema.core
+
+  column "platform" {
+    type = text
+    null = false
+  }
+
+  column "platform_user_id" {
+    type = text
+    null = false
+  }
+
+  column "platform_user_name" {
+    type = text
+    null = false
+  }
+
+  column "platform_user_login" {
+    type = text
+    null = false
+  }
+
+  column "message" {
+    type = text
+    null = false
+  }
+
+  column "created_at" {
+    type = timestamp
+    null = false
+    default = sql("CURRENT_TIMESTAMP")
+  }
+
+  unique "platform_to_platform_user_id" {
+    columns = [column.platform, column.platform_user_id]
   }
 }
