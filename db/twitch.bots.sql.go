@@ -7,6 +7,8 @@ package db
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const twitchBotCreate = `-- name: TwitchBotCreate :one
@@ -18,11 +20,11 @@ INSERT INTO twitch.bots (
   $1,
   $2,
   $3
-) RETURNING user_id, bot_id, role, broadcaster_id
+) RETURNING user_id, broadcaster_id, bot_id, role
 `
 
 type TwitchBotCreateParams struct {
-	UserID        int32
+	UserID        string
 	BroadcasterID string
 	BotID         string
 }
@@ -32,9 +34,9 @@ func (q *Queries) TwitchBotCreate(ctx context.Context, arg TwitchBotCreateParams
 	var i TwitchBot
 	err := row.Scan(
 		&i.UserID,
+		&i.BroadcasterID,
 		&i.BotID,
 		&i.Role,
-		&i.BroadcasterID,
 	)
 	return i, err
 }
@@ -44,7 +46,7 @@ DELETE FROM twitch.bots
 WHERE user_id = $1
 `
 
-func (q *Queries) TwitchBotDelete(ctx context.Context, userID int32) (int64, error) {
+func (q *Queries) TwitchBotDelete(ctx context.Context, userID string) (int64, error) {
 	result, err := q.db.Exec(ctx, twitchBotDelete, userID)
 	if err != nil {
 		return 0, err
@@ -53,14 +55,14 @@ func (q *Queries) TwitchBotDelete(ctx context.Context, userID int32) (int64, err
 }
 
 const twitchBotGet = `-- name: TwitchBotGet :one
-SELECT user_id, bot_id, role, broadcaster_id
+SELECT user_id, broadcaster_id, bot_id, role
 FROM twitch.bots
 WHERE
 user_id = $1 AND bot_id = $2
 `
 
 type TwitchBotGetParams struct {
-	UserID int32
+	UserID string
 	BotID  string
 }
 
@@ -69,24 +71,24 @@ func (q *Queries) TwitchBotGet(ctx context.Context, arg TwitchBotGetParams) (Twi
 	var i TwitchBot
 	err := row.Scan(
 		&i.UserID,
+		&i.BroadcasterID,
 		&i.BotID,
 		&i.Role,
-		&i.BroadcasterID,
 	)
 	return i, err
 }
 
 const twitchBotsGet = `-- name: TwitchBotsGet :many
-SELECT user_id, bot_id, role, broadcaster_id
+SELECT user_id, broadcaster_id, bot_id, role
 FROM twitch.bots
 WHERE 
-($1::int IS NULL OR user_id = $1) AND
-($2::text IS NULL OR broadcaster_id = $2) AND
-($3::text IS NULL OR bot_id = $3)
+($1::uuid IS NULL OR user_id = $1) AND
+($2::varchar(100) IS NULL OR broadcaster_id = $2) AND
+($3::varchar(100) IS NULL OR bot_id = $3)
 `
 
 type TwitchBotsGetParams struct {
-	UserID        *int32
+	UserID        pgtype.UUID
 	BroadcasterID *string
 	BotID         *string
 }
@@ -102,9 +104,9 @@ func (q *Queries) TwitchBotsGet(ctx context.Context, arg TwitchBotsGetParams) ([
 		var i TwitchBot
 		if err := rows.Scan(
 			&i.UserID,
+			&i.BroadcasterID,
 			&i.BotID,
 			&i.Role,
-			&i.BroadcasterID,
 		); err != nil {
 			return nil, err
 		}

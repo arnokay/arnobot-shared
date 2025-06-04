@@ -13,9 +13,9 @@ const userCreate = `-- name: UserCreate :one
 INSERT INTO users (username) VALUES ($1) RETURNING id
 `
 
-func (q *Queries) UserCreate(ctx context.Context, username string) (int32, error) {
+func (q *Queries) UserCreate(ctx context.Context, username string) (string, error) {
 	row := q.db.QueryRow(ctx, userCreate, username)
-	var id int32
+	var id string
 	err := row.Scan(&id)
 	return id, err
 }
@@ -25,7 +25,7 @@ DELETE FROM users
 WHERE id = $1
 `
 
-func (q *Queries) UserDelete(ctx context.Context, id int32) (int64, error) {
+func (q *Queries) UserDelete(ctx context.Context, id string) (int64, error) {
 	result, err := q.db.Exec(ctx, userDelete, id)
 	if err != nil {
 		return 0, err
@@ -39,7 +39,7 @@ FROM users
 WHERE id = $1
 `
 
-func (q *Queries) UserGetById(ctx context.Context, id int32) (User, error) {
+func (q *Queries) UserGetById(ctx context.Context, id string) (User, error) {
 	row := q.db.QueryRow(ctx, userGetById, id)
 	var i User
 	err := row.Scan(
@@ -61,7 +61,7 @@ WHERE id = $1
 `
 
 type UserUpdateParams struct {
-	ID       int32
+	ID       string
 	Username *string
 	Status   NullUserStatus
 }

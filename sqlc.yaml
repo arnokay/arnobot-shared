@@ -20,3 +20,5 @@ sql:
           go_type:
             import: "time"
             type: "Time"
+        - db_type: "uuid"
+          go_type: "string"

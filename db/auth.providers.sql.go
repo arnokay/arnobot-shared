@@ -7,6 +7,8 @@ package db
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const authProviderCreate = `-- name: AuthProviderCreate :one
@@ -30,7 +32,7 @@ INSERT INTO auth.providers (
 `
 
 type AuthProviderCreateParams struct {
-	UserID         int32
+	UserID         string
 	ProviderUserID string
 	Provider       string
 	AccessToken    string
@@ -55,17 +57,17 @@ func (q *Queries) AuthProviderCreate(ctx context.Context, arg AuthProviderCreate
 }
 
 const authProviderGet = `-- name: AuthProviderGet :one
-SELECT id, user_id, provider, provider_user_id, access_token, refresh_token, access_type, created_at, updated_at, scopes
+SELECT id, user_id, provider, provider_user_id, access_token, refresh_token, access_type, scopes, created_at, updated_at
 FROM auth.providers
 WHERE 
-($2::int IS NULL OR user_id = $2::int) AND
-($3::text IS NULL OR provider_user_id = $3::text) AND
+($2::uuid IS NULL OR user_id = $2::uuid) AND
+($3::varchar(100) IS NULL OR provider_user_id = $3::varchar(100)) AND
 provider = $1
 `
 
 type AuthProviderGetParams struct {
 	Provider       string
-	UserID         *int32
+	UserID         pgtype.UUID
 	ProviderUserID *string
 }
 
@@ -80,15 +82,15 @@ func (q *Queries) AuthProviderGet(ctx context.Context, arg AuthProviderGetParams
 		&i.AccessToken,
 		&i.RefreshToken,
 		&i.AccessType,
+		&i.Scopes,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.Scopes,
 	)
 	return i, err
 }
 
 const authProviderGetByProviderUserId = `-- name: AuthProviderGetByProviderUserId :one
-SELECT id, user_id, provider, provider_user_id, access_token, refresh_token, access_type, created_at, updated_at, scopes
+SELECT id, user_id, provider, provider_user_id, access_token, refresh_token, access_type, scopes, created_at, updated_at
 FROM auth.providers
 WHERE provider_user_id = $1 AND provider = $2
 `
@@ -109,21 +111,21 @@ func (q *Queries) AuthProviderGetByProviderUserId(ctx context.Context, arg AuthP
 		&i.AccessToken,
 		&i.RefreshToken,
 		&i.AccessType,
+		&i.Scopes,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.Scopes,
 	)
 	return i, err
 }
 
 const authProviderGetByUserId = `-- name: AuthProviderGetByUserId :one
-SELECT id, user_id, provider, provider_user_id, access_token, refresh_token, access_type, created_at, updated_at, scopes
+SELECT id, user_id, provider, provider_user_id, access_token, refresh_token, access_type, scopes, created_at, updated_at
 FROM auth.providers
 WHERE user_id = $1 AND provider = $2
 `
 
 type AuthProviderGetByUserIdParams struct {
-	UserID   int32
+	UserID   string
 	Provider string
 }
 
@@ -138,9 +140,9 @@ func (q *Queries) AuthProviderGetByUserId(ctx context.Context, arg AuthProviderG
 		&i.AccessToken,
 		&i.RefreshToken,
 		&i.AccessType,
+		&i.Scopes,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.Scopes,
 	)
 	return i, err
 }

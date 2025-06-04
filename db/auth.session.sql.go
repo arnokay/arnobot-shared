@@ -15,7 +15,7 @@ FROM auth.sessions
 WHERE user_id = $1
 `
 
-func (q *Queries) AuthSessionActiveCount(ctx context.Context, userID int32) (int64, error) {
+func (q *Queries) AuthSessionActiveCount(ctx context.Context, userID string) (int64, error) {
 	row := q.db.QueryRow(ctx, authSessionActiveCount, userID)
 	var count int64
 	err := row.Scan(&count)
@@ -23,12 +23,12 @@ func (q *Queries) AuthSessionActiveCount(ctx context.Context, userID int32) (int
 }
 
 const authSessionActiveGet = `-- name: AuthSessionActiveGet :many
-SELECT status, token, user_id, created_at, last_used_at
+SELECT token, status, user_id, created_at, last_used_at
 FROM auth.sessions
 WHERE user_id = $1 AND status = 'active'
 `
 
-func (q *Queries) AuthSessionActiveGet(ctx context.Context, userID int32) ([]AuthSession, error) {
+func (q *Queries) AuthSessionActiveGet(ctx context.Context, userID string) ([]AuthSession, error) {
 	rows, err := q.db.Query(ctx, authSessionActiveGet, userID)
 	if err != nil {
 		return nil, err
@@ -38,8 +38,8 @@ func (q *Queries) AuthSessionActiveGet(ctx context.Context, userID int32) ([]Aut
 	for rows.Next() {
 		var i AuthSession
 		if err := rows.Scan(
-			&i.Status,
 			&i.Token,
+			&i.Status,
 			&i.UserID,
 			&i.CreatedAt,
 			&i.LastUsedAt,
@@ -59,15 +59,15 @@ INSERT INTO auth.sessions (
   user_id
 ) VALUES (
   $1
-) RETURNING status, token, user_id, created_at, last_used_at
+) RETURNING token, status, user_id, created_at, last_used_at
 `
 
-func (q *Queries) AuthSessionCreate(ctx context.Context, userID int32) (AuthSession, error) {
+func (q *Queries) AuthSessionCreate(ctx context.Context, userID string) (AuthSession, error) {
 	row := q.db.QueryRow(ctx, authSessionCreate, userID)
 	var i AuthSession
 	err := row.Scan(
-		&i.Status,
 		&i.Token,
+		&i.Status,
 		&i.UserID,
 		&i.CreatedAt,
 		&i.LastUsedAt,
@@ -76,7 +76,7 @@ func (q *Queries) AuthSessionCreate(ctx context.Context, userID int32) (AuthSess
 }
 
 const authSessionGet = `-- name: AuthSessionGet :one
-SELECT status, token, user_id, created_at, last_used_at
+SELECT token, status, user_id, created_at, last_used_at
 FROM auth.sessions
 WHERE token = $1
 `
@@ -85,8 +85,8 @@ func (q *Queries) AuthSessionGet(ctx context.Context, token string) (AuthSession
 	row := q.db.QueryRow(ctx, authSessionGet, token)
 	var i AuthSession
 	err := row.Scan(
-		&i.Status,
 		&i.Token,
+		&i.Status,
 		&i.UserID,
 		&i.CreatedAt,
 		&i.LastUsedAt,

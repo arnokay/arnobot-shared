@@ -8,6 +8,8 @@ import (
 	"database/sql/driver"
 	"fmt"
 	"time"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type AuthSessionStatus string
@@ -141,10 +143,10 @@ func (ns NullTwitchWebhookStatus) Value() (driver.Value, error) {
 type UserStatus string
 
 const (
-	UserStatusACTIVE      UserStatus = "ACTIVE"
-	UserStatusBANNED      UserStatus = "BANNED"
-	UserStatusDEACTIVATED UserStatus = "DEACTIVATED"
-	UserStatusDELETED     UserStatus = "DELETED"
+	UserStatusActive      UserStatus = "active"
+	UserStatusBanned      UserStatus = "banned"
+	UserStatusDeactivated UserStatus = "deactivated"
+	UserStatusDeleted     UserStatus = "deleted"
 )
 
 func (e *UserStatus) Scan(src interface{}) error {
@@ -184,30 +186,80 @@ func (ns NullUserStatus) Value() (driver.Value, error) {
 
 type AuthProvider struct {
 	ID             int32
-	UserID         int32
+	UserID         string
 	Provider       string
 	ProviderUserID string
 	AccessToken    string
 	RefreshToken   string
 	AccessType     string
+	Scopes         []string
 	CreatedAt      time.Time
 	UpdatedAt      time.Time
-	Scopes         []string
 }
 
 type AuthSession struct {
-	Status     AuthSessionStatus
 	Token      string
-	UserID     int32
+	Status     AuthSessionStatus
+	UserID     string
 	CreatedAt  time.Time
 	LastUsedAt time.Time
 }
 
+type CoreChatterGroup struct {
+	ID     int32
+	UserID string
+	Name   string
+}
+
+type CoreFirstTimeMessage struct {
+	Platform         string
+	ChatterID        string
+	ChatterName      string
+	ChatterLogin     string
+	BroadcasterID    string
+	BroadcasterName  string
+	BroadcasterLogin string
+	UserID           pgtype.UUID
+	Message          string
+	CreatedAt        time.Time
+}
+
+type CoreGroupChatter struct {
+	GroupID      int32
+	Platform     string
+	ChatterID    string
+	ChatterName  string
+	ChatterLogin string
+}
+
+type CoreUserCommand struct {
+	UserID string
+	Name   string
+	Text   string
+	Reply  bool
+}
+
+type CoreUserCounter struct {
+	UserID string
+	Name   string
+	Text   string
+	Count  int32
+}
+
+type CoreUserPrefix struct {
+	UserID string
+	Prefix string
+}
+
+type SupportedPlatform struct {
+	Platform string
+}
+
 type TwitchBot struct {
-	UserID        int32
+	UserID        string
+	BroadcasterID string
 	BotID         string
 	Role          TwitchBotRole
-	BroadcasterID string
 }
 
 type TwitchDefaultBot struct {
@@ -221,41 +273,24 @@ type TwitchDefaultBroadcaster struct {
 }
 
 type TwitchSelectedBot struct {
-	UserID        int32
-	BotID         string
-	CreatedAt     time.Time
-	UpdatedAt     time.Time
+	UserID        string
 	BroadcasterID string
-}
-
-type TwitchUser struct {
-	ID              string
-	Username        string
-	DisplayName     string
-	Type            string
-	BroadcasterType string
-	ProfileImageUrl string
-	CreatedAt       time.Time
-	AuthProviderID  *int32
-}
-
-type TwitchWebhook struct {
-	Event              string
-	Callback           string
-	UserID             int32
-	BroadcasterID      string
-	BotID              string
-	CreatedAt          time.Time
-	UpdatedAt          time.Time
-	SubscriptionID     string
-	Status             TwitchWebhookStatus
-	SubscriptionStatus string
+	BotID         string
+	UpdatedAt     time.Time
 }
 
 type User struct {
-	ID        int32
+	ID        string
 	Username  string
 	Status    UserStatus
 	CreatedAt time.Time
 	UpdatedAt time.Time
+}
+
+type UserPlatformAccount struct {
+	Platform          string
+	PlatformUserID    string
+	PlatformUserName  string
+	PlatformUserLogin string
+	UserID            string
 }

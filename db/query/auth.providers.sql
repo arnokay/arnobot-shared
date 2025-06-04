@@ -2,8 +2,8 @@
 SELECT *
 FROM auth.providers
 WHERE 
-(sqlc.narg('user_id')::int IS NULL OR user_id = sqlc.narg('user_id')::int) AND
-(sqlc.narg('provider_user_id')::text IS NULL OR provider_user_id = sqlc.narg('provider_user_id')::text) AND
+(sqlc.narg('user_id')::uuid IS NULL OR user_id = sqlc.narg('user_id')::uuid) AND
+(sqlc.narg('provider_user_id')::varchar(100) IS NULL OR provider_user_id = sqlc.narg('provider_user_id')::varchar(100)) AND
 provider = $1;
 
 -- name: AuthProviderGetByUserId :one

@@ -17,11 +17,11 @@ ON CONFLICT (user_id) DO UPDATE
   bot_id = $2,
   broadcaster_id = $3,
   updated_at = CURRENT_TIMESTAMP
-  RETURNING user_id, bot_id, created_at, updated_at, broadcaster_id
+  RETURNING user_id, broadcaster_id, bot_id, updated_at
 `
 
 type TwitchSelectedBotChangeParams struct {
-	UserID        int32
+	UserID        string
 	BotID         string
 	BroadcasterID string
 }
@@ -31,16 +31,15 @@ func (q *Queries) TwitchSelectedBotChange(ctx context.Context, arg TwitchSelecte
 	var i TwitchSelectedBot
 	err := row.Scan(
 		&i.UserID,
-		&i.BotID,
-		&i.CreatedAt,
-		&i.UpdatedAt,
 		&i.BroadcasterID,
+		&i.BotID,
+		&i.UpdatedAt,
 	)
 	return i, err
 }
 
 const twitchSelectedBotGetByBroadcasterID = `-- name: TwitchSelectedBotGetByBroadcasterID :one
-SELECT user_id, bot_id, created_at, updated_at, broadcaster_id
+SELECT user_id, broadcaster_id, bot_id, updated_at
 FROM twitch.selected_bots
 WHERE broadcaster_id = $1
 `
@@ -50,29 +49,27 @@ func (q *Queries) TwitchSelectedBotGetByBroadcasterID(ctx context.Context, broad
 	var i TwitchSelectedBot
 	err := row.Scan(
 		&i.UserID,
-		&i.BotID,
-		&i.CreatedAt,
-		&i.UpdatedAt,
 		&i.BroadcasterID,
+		&i.BotID,
+		&i.UpdatedAt,
 	)
 	return i, err
 }
 
 const twitchSelectedBotGetByUserID = `-- name: TwitchSelectedBotGetByUserID :one
-SELECT user_id, bot_id, created_at, updated_at, broadcaster_id
+SELECT user_id, broadcaster_id, bot_id, updated_at
 FROM twitch.selected_bots
 WHERE user_id = $1
 `
 
-func (q *Queries) TwitchSelectedBotGetByUserID(ctx context.Context, userID int32) (TwitchSelectedBot, error) {
+func (q *Queries) TwitchSelectedBotGetByUserID(ctx context.Context, userID string) (TwitchSelectedBot, error) {
 	row := q.db.QueryRow(ctx, twitchSelectedBotGetByUserID, userID)
 	var i TwitchSelectedBot
 	err := row.Scan(
 		&i.UserID,
-		&i.BotID,
-		&i.CreatedAt,
-		&i.UpdatedAt,
 		&i.BroadcasterID,
+		&i.BotID,
+		&i.UpdatedAt,
 	)
 	return i, err
 }

@@ -19,9 +19,9 @@ user_id = $1 AND bot_id = $2;
 SELECT *
 FROM twitch.bots
 WHERE 
-(sqlc.narg('user_id')::int IS NULL OR user_id = sqlc.narg('user_id')) AND
-(sqlc.narg('broadcaster_id')::text IS NULL OR broadcaster_id = sqlc.narg('broadcaster_id')) AND
-(sqlc.narg('bot_id')::text IS NULL OR bot_id = sqlc.narg('bot_id'));
+(sqlc.narg('user_id')::uuid IS NULL OR user_id = sqlc.narg('user_id')) AND
+(sqlc.narg('broadcaster_id')::varchar(100) IS NULL OR broadcaster_id = sqlc.narg('broadcaster_id')) AND
+(sqlc.narg('bot_id')::varchar(100) IS NULL OR bot_id = sqlc.narg('bot_id'));
 
 -- name: TwitchBotDelete :execrows
 DELETE FROM twitch.bots
