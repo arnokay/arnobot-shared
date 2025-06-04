@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"fmt"
 	"log/slog"
 	"sync"
 
@@ -45,7 +44,6 @@ func NewHelixManager(authModuleSerivce *AuthModuleService, clientID, clientSecre
 		"bits:read",
 	})
   assert.NoError(err, "cannot get access tokens for app client")
-  fmt.Println(token)
   appClient.SetAppAccessToken(token.Data.AccessToken)
 
 	return &HelixManager{

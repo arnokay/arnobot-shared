@@ -1,7 +1,6 @@
 package middlewares
 
 import (
-	"fmt"
 	"log/slog"
 	"strings"
 
@@ -32,7 +31,6 @@ func NewAuthMiddleware(
 func (m *AuthMiddlewares) UserSessionGuard(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		header := c.Request().Header.Get("Authorization")
-    fmt.Println("kek2")
 
 		if !strings.HasPrefix(header, "Session") {
       m.logger.DebugContext(c.Request().Context(), "header has no session prefix")
@@ -65,7 +63,6 @@ func (m *AuthMiddlewares) UserSessionGuard(next echo.HandlerFunc) echo.HandlerFu
 func (m *AuthMiddlewares) SessionGetOwner(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		header := c.Request().Header.Get("Authorization")
-    fmt.Println("kek3")
 
 		if !strings.HasPrefix(header, "Session") {
 			return next(c)
