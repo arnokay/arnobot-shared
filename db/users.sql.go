@@ -7,15 +7,17 @@ package db
 
 import (
 	"context"
+
+	"github.com/google/uuid"
 )
 
 const userCreate = `-- name: UserCreate :one
 INSERT INTO users (username) VALUES ($1) RETURNING id
 `
 
-func (q *Queries) UserCreate(ctx context.Context, username string) (string, error) {
+func (q *Queries) UserCreate(ctx context.Context, username string) (uuid.UUID, error) {
 	row := q.db.QueryRow(ctx, userCreate, username)
-	var id string
+	var id uuid.UUID
 	err := row.Scan(&id)
 	return id, err
 }
@@ -25,7 +27,7 @@ DELETE FROM users
 WHERE id = $1
 `
 
-func (q *Queries) UserDelete(ctx context.Context, id string) (int64, error) {
+func (q *Queries) UserDelete(ctx context.Context, id uuid.UUID) (int64, error) {
 	result, err := q.db.Exec(ctx, userDelete, id)
 	if err != nil {
 		return 0, err
@@ -39,7 +41,7 @@ FROM users
 WHERE id = $1
 `
 
-func (q *Queries) UserGetById(ctx context.Context, id string) (User, error) {
+func (q *Queries) UserGetById(ctx context.Context, id uuid.UUID) (User, error) {
 	row := q.db.QueryRow(ctx, userGetById, id)
 	var i User
 	err := row.Scan(
@@ -61,7 +63,7 @@ WHERE id = $1
 `
 
 type UserUpdateParams struct {
-	ID       string
+	ID       uuid.UUID
 	Username *string
 	Status   NullUserStatus
 }

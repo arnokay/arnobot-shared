@@ -6,6 +6,8 @@ package db
 
 import (
 	"context"
+
+	"github.com/google/uuid"
 )
 
 type Querier interface {
@@ -15,14 +17,14 @@ type Querier interface {
 	AuthProviderGetByUserId(ctx context.Context, arg AuthProviderGetByUserIdParams) (AuthProvider, error)
 	// refresh_token = COALESCE($2, refresh_token),
 	AuthProviderUpdateTokens(ctx context.Context, arg AuthProviderUpdateTokensParams) (int64, error)
-	AuthSessionActiveCount(ctx context.Context, userID string) (int64, error)
-	AuthSessionActiveGet(ctx context.Context, userID string) ([]AuthSession, error)
-	AuthSessionCreate(ctx context.Context, userID string) (AuthSession, error)
+	AuthSessionActiveCount(ctx context.Context, userID uuid.UUID) (int64, error)
+	AuthSessionActiveGet(ctx context.Context, userID uuid.UUID) ([]AuthSession, error)
+	AuthSessionCreate(ctx context.Context, userID uuid.UUID) (AuthSession, error)
 	AuthSessionGet(ctx context.Context, token string) (AuthSession, error)
 	AuthSessionGetOwner(ctx context.Context, token string) (AuthSessionGetOwnerRow, error)
 	AuthSessionValidate(ctx context.Context, token string) (AuthSessionStatus, error)
 	TwitchBotCreate(ctx context.Context, arg TwitchBotCreateParams) (TwitchBot, error)
-	TwitchBotDelete(ctx context.Context, userID string) (int64, error)
+	TwitchBotDelete(ctx context.Context, userID uuid.UUID) (int64, error)
 	TwitchBotGet(ctx context.Context, arg TwitchBotGetParams) (TwitchBot, error)
 	TwitchBotsGet(ctx context.Context, arg TwitchBotsGetParams) ([]TwitchBot, error)
 	TwitchDefaultBotGet(ctx context.Context) (TwitchDefaultBot, error)
@@ -31,10 +33,10 @@ type Querier interface {
 	TwitchDefaultBroadcasterUpdate(ctx context.Context, twitchUserID string) (int64, error)
 	TwitchSelectedBotChange(ctx context.Context, arg TwitchSelectedBotChangeParams) (TwitchSelectedBot, error)
 	TwitchSelectedBotGetByBroadcasterID(ctx context.Context, broadcasterID string) (TwitchSelectedBot, error)
-	TwitchSelectedBotGetByUserID(ctx context.Context, userID string) (TwitchSelectedBot, error)
-	UserCreate(ctx context.Context, username string) (string, error)
-	UserDelete(ctx context.Context, id string) (int64, error)
-	UserGetById(ctx context.Context, id string) (User, error)
+	TwitchSelectedBotGetByUserID(ctx context.Context, userID uuid.UUID) (TwitchSelectedBot, error)
+	UserCreate(ctx context.Context, username string) (uuid.UUID, error)
+	UserDelete(ctx context.Context, id uuid.UUID) (int64, error)
+	UserGetById(ctx context.Context, id uuid.UUID) (User, error)
 	UserUpdate(ctx context.Context, arg UserUpdateParams) (int64, error)
 }
 

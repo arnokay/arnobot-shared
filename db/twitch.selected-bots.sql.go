@@ -7,6 +7,8 @@ package db
 
 import (
 	"context"
+
+	"github.com/google/uuid"
 )
 
 const twitchSelectedBotChange = `-- name: TwitchSelectedBotChange :one
@@ -21,7 +23,7 @@ ON CONFLICT (user_id) DO UPDATE
 `
 
 type TwitchSelectedBotChangeParams struct {
-	UserID        string
+	UserID        uuid.UUID
 	BotID         string
 	BroadcasterID string
 }
@@ -62,7 +64,7 @@ FROM twitch.selected_bots
 WHERE user_id = $1
 `
 
-func (q *Queries) TwitchSelectedBotGetByUserID(ctx context.Context, userID string) (TwitchSelectedBot, error) {
+func (q *Queries) TwitchSelectedBotGetByUserID(ctx context.Context, userID uuid.UUID) (TwitchSelectedBot, error) {
 	row := q.db.QueryRow(ctx, twitchSelectedBotGetByUserID, userID)
 	var i TwitchSelectedBot
 	err := row.Scan(

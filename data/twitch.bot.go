@@ -3,6 +3,8 @@ package data
 import (
 	"time"
 
+	"github.com/google/uuid"
+
 	"arnobot-shared/db"
 )
 
@@ -17,10 +19,9 @@ func NewTwitchDefaultBotFromDB(fromDB db.TwitchDefaultBot) TwitchDefaultBot {
 }
 
 type TwitchSelectedBot struct {
-	UserID        int32
+	UserID        uuid.UUID
 	BotID         string
 	BroadcasterID string
-	CreatedAt     time.Time
 	UpdatedAt     time.Time
 }
 
@@ -29,7 +30,6 @@ func NewTwitchSelectedBotFromDB(fromDB db.TwitchSelectedBot) TwitchSelectedBot {
 		UserID:        fromDB.UserID,
 		BotID:         fromDB.BotID,
 		BroadcasterID: fromDB.BroadcasterID,
-		CreatedAt:     fromDB.CreatedAt,
 		UpdatedAt:     fromDB.UpdatedAt,
 	}
 }
@@ -44,7 +44,7 @@ const (
 )
 
 type TwitchBot struct {
-	UserID        int32
+	UserID        uuid.UUID
 	BotID         string
 	BroadcasterID string
 	Role          TwitchBotRole
@@ -60,7 +60,7 @@ func NewTwitchBotFromDB(fromDB db.TwitchBot) TwitchBot {
 }
 
 type TwitchBotCreate struct {
-	UserID        int32
+	UserID        uuid.UUID
 	BotID         string
 	BroadcasterID string
 }
@@ -74,7 +74,7 @@ func (d TwitchBotCreate) ToDB() db.TwitchBotCreateParams {
 }
 
 type TwitchBotsGet struct {
-	UserID        *int32
+	UserID        *uuid.UUID
 	BotID         *string
 	BroadcasterID *string
 }

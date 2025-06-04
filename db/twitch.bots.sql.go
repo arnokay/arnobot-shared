@@ -8,7 +8,7 @@ package db
 import (
 	"context"
 
-	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/google/uuid"
 )
 
 const twitchBotCreate = `-- name: TwitchBotCreate :one
@@ -24,7 +24,7 @@ INSERT INTO twitch.bots (
 `
 
 type TwitchBotCreateParams struct {
-	UserID        string
+	UserID        uuid.UUID
 	BroadcasterID string
 	BotID         string
 }
@@ -46,7 +46,7 @@ DELETE FROM twitch.bots
 WHERE user_id = $1
 `
 
-func (q *Queries) TwitchBotDelete(ctx context.Context, userID string) (int64, error) {
+func (q *Queries) TwitchBotDelete(ctx context.Context, userID uuid.UUID) (int64, error) {
 	result, err := q.db.Exec(ctx, twitchBotDelete, userID)
 	if err != nil {
 		return 0, err
@@ -62,7 +62,7 @@ user_id = $1 AND bot_id = $2
 `
 
 type TwitchBotGetParams struct {
-	UserID string
+	UserID uuid.UUID
 	BotID  string
 }
 
@@ -88,7 +88,7 @@ WHERE
 `
 
 type TwitchBotsGetParams struct {
-	UserID        pgtype.UUID
+	UserID        *uuid.UUID
 	BroadcasterID *string
 	BotID         *string
 }

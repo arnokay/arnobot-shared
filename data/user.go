@@ -3,13 +3,15 @@ package data
 import (
 	"time"
 
+	"github.com/google/uuid"
+
 	"arnobot-shared/db"
 )
 
 type UserStatus = db.UserStatus
 
 type User struct {
-	ID        int32      `json:"id"`
+	ID        uuid.UUID  `json:"id"`
 	Username  string     `json:"username"`
 	Status    UserStatus `json:"status"`
 	CreatedAt time.Time  `json:"createdAt"`
@@ -31,19 +33,19 @@ type UserUpdate struct {
 	Status   *UserStatus `json:"status"`
 }
 
-func (u UserUpdate) ToDB(id int32) db.UserUpdateParams {
-  status := db.NullUserStatus{
-    Valid: false,
-  }
+func (u UserUpdate) ToDB(id uuid.UUID) db.UserUpdateParams {
+	status := db.NullUserStatus{
+		Valid: false,
+	}
 
-  if u.Status != nil {
-    status.UserStatus = *u.Status
-    status.Valid = true
-  }
+	if u.Status != nil {
+		status.UserStatus = *u.Status
+		status.Valid = true
+	}
 
-  return db.UserUpdateParams{
-    ID: id,
-    Username: u.Username,
-    Status: status,
-  }
+	return db.UserUpdateParams{
+		ID:       id,
+		Username: u.Username,
+		Status:   status,
+	}
 }

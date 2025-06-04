@@ -56,7 +56,7 @@ CREATE TABLE public.user_platform_accounts (
 );
 
 CREATE TABLE auth.sessions (
-    token uuid PRIMARY KEY DEFAULT gen_random_uuid (),
+    token varchar(50) PRIMARY KEY DEFAULT gen_random_uuid (),
     status auth.session_status NOT NULL DEFAULT 'active',
     user_id uuid NOT NULL,
     created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,

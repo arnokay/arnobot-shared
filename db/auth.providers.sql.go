@@ -8,7 +8,7 @@ package db
 import (
 	"context"
 
-	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/google/uuid"
 )
 
 const authProviderCreate = `-- name: AuthProviderCreate :one
@@ -32,7 +32,7 @@ INSERT INTO auth.providers (
 `
 
 type AuthProviderCreateParams struct {
-	UserID         string
+	UserID         uuid.UUID
 	ProviderUserID string
 	Provider       string
 	AccessToken    string
@@ -67,7 +67,7 @@ provider = $1
 
 type AuthProviderGetParams struct {
 	Provider       string
-	UserID         pgtype.UUID
+	UserID         *uuid.UUID
 	ProviderUserID *string
 }
 
@@ -125,7 +125,7 @@ WHERE user_id = $1 AND provider = $2
 `
 
 type AuthProviderGetByUserIdParams struct {
-	UserID   string
+	UserID   uuid.UUID
 	Provider string
 }
 

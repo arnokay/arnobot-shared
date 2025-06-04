@@ -3,10 +3,12 @@ package data
 import (
 	"time"
 
+	"github.com/google/uuid"
+
 	"arnobot-shared/db"
 )
 
-type AuthSessionStatus string
+type AuthSessionStatus = db.AuthSessionStatus
 
 const (
 	AuthSessionStatusActive   AuthSessionStatus = "active"
@@ -15,7 +17,7 @@ const (
 
 type AuthSession struct {
 	Token      string            `json:"token"`
-	UserID     int32             `json:"userId"`
+	UserID     uuid.UUID         `json:"userId"`
 	Status     AuthSessionStatus `json:"status"`
 	CreatedAt  time.Time         `json:"createdAt"`
 	LastUsedAt time.Time         `json:"lastUsedAt"`

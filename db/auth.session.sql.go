@@ -7,6 +7,8 @@ package db
 
 import (
 	"context"
+
+	"github.com/google/uuid"
 )
 
 const authSessionActiveCount = `-- name: AuthSessionActiveCount :one
@@ -15,7 +17,7 @@ FROM auth.sessions
 WHERE user_id = $1
 `
 
-func (q *Queries) AuthSessionActiveCount(ctx context.Context, userID string) (int64, error) {
+func (q *Queries) AuthSessionActiveCount(ctx context.Context, userID uuid.UUID) (int64, error) {
 	row := q.db.QueryRow(ctx, authSessionActiveCount, userID)
 	var count int64
 	err := row.Scan(&count)
@@ -28,7 +30,7 @@ FROM auth.sessions
 WHERE user_id = $1 AND status = 'active'
 `
 
-func (q *Queries) AuthSessionActiveGet(ctx context.Context, userID string) ([]AuthSession, error) {
+func (q *Queries) AuthSessionActiveGet(ctx context.Context, userID uuid.UUID) ([]AuthSession, error) {
 	rows, err := q.db.Query(ctx, authSessionActiveGet, userID)
 	if err != nil {
 		return nil, err
@@ -62,7 +64,7 @@ INSERT INTO auth.sessions (
 ) RETURNING token, status, user_id, created_at, last_used_at
 `
 
-func (q *Queries) AuthSessionCreate(ctx context.Context, userID string) (AuthSession, error) {
+func (q *Queries) AuthSessionCreate(ctx context.Context, userID uuid.UUID) (AuthSession, error) {
 	row := q.db.QueryRow(ctx, authSessionCreate, userID)
 	var i AuthSession
 	err := row.Scan(

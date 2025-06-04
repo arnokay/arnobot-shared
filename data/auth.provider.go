@@ -3,12 +3,14 @@ package data
 import (
 	"time"
 
+	"github.com/google/uuid"
+
 	"arnobot-shared/db"
 )
 
 type AuthProvider struct {
 	ID             int32
-	UserID         int32
+	UserID         uuid.UUID
 	Provider       string
 	ProviderUserID string
 	AccessToken    string
@@ -35,7 +37,7 @@ func NewProviderAuthFromDB(fromDB db.AuthProvider) AuthProvider {
 }
 
 type AuthProviderCreate struct {
-	UserID         int32
+	UserID         uuid.UUID
 	Provider       string
 	ProviderUserID string
 	AccessToken    string
@@ -75,7 +77,7 @@ func (p AuthProviderUpdateTokens) ToDB(id int32) db.AuthProviderUpdateTokensPara
 }
 
 type AuthProviderUpdate struct {
-	UserID         int32
+	UserID         string
 	ProviderUserID string
 	AccessToken    string
 	RefreshToken   string
@@ -84,7 +86,7 @@ type AuthProviderUpdate struct {
 
 type AuthProviderGet struct {
 	ProviderUserID *string
-	UserID         *int32
+	UserID         *uuid.UUID
 	Provider       string
 }
 

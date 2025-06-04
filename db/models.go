@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/google/uuid"
 )
 
 type AuthSessionStatus string
@@ -186,7 +186,7 @@ func (ns NullUserStatus) Value() (driver.Value, error) {
 
 type AuthProvider struct {
 	ID             int32
-	UserID         string
+	UserID         uuid.UUID
 	Provider       string
 	ProviderUserID string
 	AccessToken    string
@@ -200,14 +200,14 @@ type AuthProvider struct {
 type AuthSession struct {
 	Token      string
 	Status     AuthSessionStatus
-	UserID     string
+	UserID     uuid.UUID
 	CreatedAt  time.Time
 	LastUsedAt time.Time
 }
 
 type CoreChatterGroup struct {
 	ID     int32
-	UserID string
+	UserID uuid.UUID
 	Name   string
 }
 
@@ -219,7 +219,7 @@ type CoreFirstTimeMessage struct {
 	BroadcasterID    string
 	BroadcasterName  string
 	BroadcasterLogin string
-	UserID           pgtype.UUID
+	UserID           *uuid.UUID
 	Message          string
 	CreatedAt        time.Time
 }
@@ -233,21 +233,21 @@ type CoreGroupChatter struct {
 }
 
 type CoreUserCommand struct {
-	UserID string
+	UserID uuid.UUID
 	Name   string
 	Text   string
 	Reply  bool
 }
 
 type CoreUserCounter struct {
-	UserID string
+	UserID uuid.UUID
 	Name   string
 	Text   string
 	Count  int32
 }
 
 type CoreUserPrefix struct {
-	UserID string
+	UserID uuid.UUID
 	Prefix string
 }
 
@@ -256,7 +256,7 @@ type SupportedPlatform struct {
 }
 
 type TwitchBot struct {
-	UserID        string
+	UserID        uuid.UUID
 	BroadcasterID string
 	BotID         string
 	Role          TwitchBotRole
@@ -273,14 +273,14 @@ type TwitchDefaultBroadcaster struct {
 }
 
 type TwitchSelectedBot struct {
-	UserID        string
+	UserID        uuid.UUID
 	BroadcasterID string
 	BotID         string
 	UpdatedAt     time.Time
 }
 
 type User struct {
-	ID        string
+	ID        uuid.UUID
 	Username  string
 	Status    UserStatus
 	CreatedAt time.Time
@@ -292,5 +292,5 @@ type UserPlatformAccount struct {
 	PlatformUserID    string
 	PlatformUserName  string
 	PlatformUserLogin string
-	UserID            string
+	UserID            uuid.UUID
 }
