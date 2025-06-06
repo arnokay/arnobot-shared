@@ -10,7 +10,7 @@ import (
 	"arnobot-shared/applog"
 	"arnobot-shared/data"
 	"arnobot-shared/pkg/assert"
-	"arnobot-shared/pkg/errs"
+	"arnobot-shared/apperror"
 )
 
 // TODO: right now there is no cleanup for clients
@@ -69,7 +69,7 @@ func (hm *HelixManager) GetByID(ctx context.Context, twitchID string) (*helix.Cl
 		return client, nil
 	}
 
-	return nil, errs.New(errs.CodeNotFound, "helix client is not found", nil)
+	return nil, apperror.New(apperror.CodeNotFound, "helix client is not found", nil)
 }
 
 func (hm *HelixManager) GetByProvider(ctx context.Context, provider data.AuthProvider) *helix.Client {

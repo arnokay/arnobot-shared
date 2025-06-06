@@ -9,7 +9,7 @@ import (
 	"arnobot-shared/applog"
 	"arnobot-shared/data"
 	"arnobot-shared/mbtypes"
-	"arnobot-shared/pkg/errs"
+	"arnobot-shared/apperror"
 	"arnobot-shared/topics"
 	"arnobot-shared/trace"
 )
@@ -39,7 +39,7 @@ func (s *AuthModuleService) AuthSessionValidate(ctx context.Context, token strin
 	msg, err := s.mb.RequestWithContext(ctx, topics.AuthSessionTokenValidate, reqBytes)
 	if err != nil {
 		s.logger.ErrorContext(ctx, "cannot validate user session", "err", err)
-		return false, errs.ErrInternal
+		return false, apperror.ErrInternal
 	}
 
 	var response mbtypes.AuthSessionTokenValidateResponse
@@ -47,11 +47,11 @@ func (s *AuthModuleService) AuthSessionValidate(ctx context.Context, token strin
 	err = response.Decode(msg.Data)
 	if err != nil {
 		s.logger.ErrorContext(ctx, "cannot decode response", "err", err)
-		return false, errs.ErrInternal
+		return false, apperror.ErrInternal
 	}
 
 	if !response.Success {
-		return false, errs.New(response.Code, response.Error, nil)
+		return false, apperror.New(response.Code, response.Error, nil)
 	}
 
 	return true, nil
@@ -68,7 +68,7 @@ func (s *AuthModuleService) AuthSessionGetOwner(ctx context.Context, token strin
 	msg, err := s.mb.RequestWithContext(ctx, topics.AuthSessionTokenExchange, b)
 	if err != nil {
 		s.logger.ErrorContext(ctx, "cannot request user session exchange", "err", err)
-		return nil, errs.ErrInternal
+		return nil, apperror.ErrInternal
 	}
 
 	var res mbtypes.AuthSessionTokenExchangeResponse
@@ -76,11 +76,11 @@ func (s *AuthModuleService) AuthSessionGetOwner(ctx context.Context, token strin
 	err = res.Decode(msg.Data)
 	if err != nil {
 		s.logger.ErrorContext(ctx, "cannot decode response", "err", err)
-		return nil, errs.ErrInternal
+		return nil, apperror.ErrInternal
 	}
 
 	if !res.Success {
-		return nil, errs.New(res.Code, res.Error, nil)
+		return nil, apperror.New(res.Code, res.Error, nil)
 	}
 
 	return res.Data, nil
@@ -97,7 +97,7 @@ func (s *AuthModuleService) AuthProviderGet(ctx context.Context, data data.AuthP
 	msg, err := s.mb.RequestWithContext(ctx, topics.AuthProviderTokenGet, b)
 	if err != nil {
 		s.logger.ErrorContext(ctx, "cannot request provider", "err", err)
-		return nil, errs.ErrInternal
+		return nil, apperror.ErrInternal
 	}
 
 	var res mbtypes.AuthProviderGetResponse
@@ -105,12 +105,12 @@ func (s *AuthModuleService) AuthProviderGet(ctx context.Context, data data.AuthP
 	err = res.Decode(msg.Data)
 	if err != nil {
 		s.logger.ErrorContext(ctx, "cannot decode provider response", "err", err)
-		return nil, errs.ErrInternal
+		return nil, apperror.ErrInternal
 	}
 
 	if !res.Success {
     s.logger.DebugContext(ctx, "unsuccessful request for auth provider", "err", res.Error)
-		return nil, errs.New(res.Code, res.Error, nil)
+		return nil, apperror.New(res.Code, res.Error, nil)
 	}
 
 	return res.Data, nil
@@ -130,7 +130,7 @@ func (s *AuthModuleService) AuthProviderUpdateTokens(ctx context.Context, id int
 	msg, err := s.mb.RequestWithContext(ctx, topics.AuthProviderTokenUpdateTokens, b)
 	if err != nil {
 		s.logger.ErrorContext(ctx, "cannot request provider tokens update", "err", err)
-		return errs.ErrInternal
+		return apperror.ErrInternal
 	}
 
 	var res mbtypes.AuthProviderUpdateTokensResponse
@@ -138,11 +138,11 @@ func (s *AuthModuleService) AuthProviderUpdateTokens(ctx context.Context, id int
 	err = res.Decode(msg.Data)
 	if err != nil {
 		s.logger.ErrorContext(ctx, "cannot decode provider response", "err", err)
-		return errs.ErrInternal
+		return apperror.ErrInternal
 	}
 
 	if !res.Success {
-		return errs.New(res.Code, res.Error, nil)
+		return apperror.New(res.Code, res.Error, nil)
 	}
 
 	return nil

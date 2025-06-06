@@ -11,7 +11,7 @@ import (
 
 	"arnobot-shared/applog"
 	"arnobot-shared/db"
-	"arnobot-shared/pkg/errs"
+	"arnobot-shared/apperror"
 	"arnobot-shared/service"
 )
 
@@ -60,7 +60,7 @@ func (s *Storage) HandleErr(ctx context.Context, err error) error {
 
 	if errors.Is(err, pgx.ErrNoRows) {
 		s.logger.DebugContext(ctx, "resource not found")
-		return errs.ErrNotFound
+		return apperror.ErrNotFound
 	}
 
 	var pgErr *pgconn.PgError
@@ -68,13 +68,13 @@ func (s *Storage) HandleErr(ctx context.Context, err error) error {
 		switch pgErr.Code {
 		case "23505": // unique_violation
 			s.logger.DebugContext(ctx, "resource already exists", "err", pgErr)
-			return errs.ErrAlreadyExists
+			return apperror.ErrAlreadyExists
 		case "23503": // foreign_key_violation
 			s.logger.DebugContext(ctx, "resource foreign key violation", "err", pgErr)
-			return errs.ErrInvalidInput
+			return apperror.ErrInvalidInput
 		case "23514": // check_violation
 			s.logger.DebugContext(ctx, "resource check violation", "err", pgErr)
-			return errs.ErrInvalidInput
+			return apperror.ErrInvalidInput
 		default:
 			s.logger.ErrorContext(ctx, "unknown pgx error", "err", pgErr)
 			return err

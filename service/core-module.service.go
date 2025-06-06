@@ -9,7 +9,7 @@ import (
 	"arnobot-shared/applog"
 	"arnobot-shared/events"
 	"arnobot-shared/mbtypes"
-	"arnobot-shared/pkg/errs"
+	"arnobot-shared/apperror"
 	"arnobot-shared/topics"
 	"arnobot-shared/trace"
 )
@@ -39,7 +39,7 @@ func (s *CoreModuleService) ChatMessageNotify(ctx context.Context, arg events.Me
 	err := s.mb.Publish(topics.CoreChatMessageNotify, payloadBytes)
 	if err != nil {
 		s.logger.ErrorContext(ctx, "cannot notify about new message", "err", err)
-		return errs.ErrInternal
+		return apperror.ErrInternal
 	}
 
 	return nil

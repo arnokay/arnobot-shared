@@ -9,7 +9,7 @@ import (
 
 	"arnobot-shared/applog"
 	"arnobot-shared/pkg/assert"
-	"arnobot-shared/pkg/errs"
+	"arnobot-shared/apperror"
 )
 
 type MessageBrokerService struct {
@@ -32,7 +32,7 @@ func (s *MessageBrokerService) Request(ctx context.Context, topic string, data a
 	msg, err := s.mb.RequestWithContext(ctx, string(topic), b)
 	if err != nil {
     s.logger.Error("cannot request", "topic", topic, "data", data)
-		return errs.ErrInternal
+		return apperror.ErrInternal
 	}
 
   err = json.Unmarshal(msg.Data, &resp)

@@ -9,7 +9,7 @@ import (
 	"arnobot-shared/applog"
 	"arnobot-shared/events"
 	"arnobot-shared/mbtypes"
-	"arnobot-shared/pkg/errs"
+	"arnobot-shared/apperror"
 	"arnobot-shared/topics"
 	"arnobot-shared/trace"
 )
@@ -39,7 +39,7 @@ func (s *TwitchModuleService) ChatSendMessage(ctx context.Context, arg events.Me
 	err := s.mb.Publish(topics.TwitchChatMessageSend, payloadBytes)
 	if err != nil {
 		s.logger.ErrorContext(ctx, "cannot send chat message", "err", err)
-		return errs.ErrInternal
+		return apperror.ErrInternal
 	}
 
 	return nil

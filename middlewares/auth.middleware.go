@@ -8,7 +8,7 @@ import (
 
 	"arnobot-shared/appctx"
 	"arnobot-shared/applog"
-	"arnobot-shared/pkg/errs"
+	"arnobot-shared/apperror"
 	"arnobot-shared/service"
 )
 
@@ -34,13 +34,13 @@ func (m *AuthMiddlewares) UserSessionGuard(next echo.HandlerFunc) echo.HandlerFu
 
 		if !strings.HasPrefix(header, "Session") {
       m.logger.DebugContext(c.Request().Context(), "header has no session prefix")
-			return errs.ErrUnauthorized
+			return apperror.ErrUnauthorized
 		}
 
 		parts := strings.SplitN(header, " ", 2)
 		if len(parts) != 2 {
       m.logger.DebugContext(c.Request().Context(), "header has no token")
-			return errs.ErrUnauthorized
+			return apperror.ErrUnauthorized
 		}
 
 		sessionToken := parts[1]
@@ -48,12 +48,12 @@ func (m *AuthMiddlewares) UserSessionGuard(next echo.HandlerFunc) echo.HandlerFu
 		valid, err := m.authModuleService.AuthSessionValidate(c.Request().Context(), sessionToken)
 		if err != nil {
       m.logger.DebugContext(c.Request().Context(), "cannot get auth session validate", "err", err)
-			return errs.ErrUnauthorized
+			return apperror.ErrUnauthorized
 		}
 
 		if !valid {
       m.logger.DebugContext(c.Request().Context(), "token is not valid")
-			return errs.ErrUnauthorized
+			return apperror.ErrUnauthorized
 		}
 
 		return next(c)

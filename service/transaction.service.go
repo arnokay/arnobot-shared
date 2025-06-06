@@ -6,7 +6,7 @@ import (
 	"log/slog"
 
 	"arnobot-shared/applog"
-	"arnobot-shared/pkg/errs"
+	"arnobot-shared/apperror"
 
 	"github.com/jackc/pgx/v5"
 )
@@ -54,7 +54,7 @@ func (s *PgxTransactionService) Begin(ctx context.Context) (context.Context, err
 	tx, err := s.db.Begin(ctx)
 	if err != nil {
 		s.logger.ErrorContext(ctx, "cannot begin transaction", "err", err)
-		return nil, errs.ErrInternal
+		return nil, apperror.ErrInternal
 	}
 	txCtx := context.WithValue(ctx, txKey, tx)
 
@@ -67,7 +67,7 @@ func (s *PgxTransactionService) Commit(ctx context.Context) error {
 	tx, ok := ctx.Value(txKey).(pgx.Tx)
 	if !ok || tx == nil {
 		s.logger.ErrorContext(ctx, "transaction is nil, cannot commit")
-		return errs.ErrInternal
+		return apperror.ErrInternal
 	}
 
 	err := tx.Commit(ctx)
@@ -77,11 +77,11 @@ func (s *PgxTransactionService) Commit(ctx context.Context) error {
 		}
 		if errors.Is(err, pgx.ErrTxCommitRollback) {
 			s.logger.WarnContext(ctx, "cannot commit, transaction was rolled back", "err", err)
-			return errs.ErrInternal
+			return apperror.ErrInternal
 		}
 
 		s.logger.ErrorContext(ctx, "cannot commit", "err", err)
-		return errs.ErrInternal
+		return apperror.ErrInternal
 	}
 
   s.logger.DebugContext(ctx, "commited transaction")
@@ -93,7 +93,7 @@ func (s *PgxTransactionService) Rollback(ctx context.Context) error {
 	tx, ok := ctx.Value(txKey).(pgx.Tx)
 	if !ok || tx == nil {
 		s.logger.ErrorContext(ctx, "transaction is nil, cannot rollback")
-		return errs.ErrInternal
+		return apperror.ErrInternal
 	}
 
 	err := tx.Rollback(ctx)
@@ -103,7 +103,7 @@ func (s *PgxTransactionService) Rollback(ctx context.Context) error {
 		}
 
 		s.logger.ErrorContext(ctx, "cannot rollback", "err", err)
-		return errs.ErrInternal
+		return apperror.ErrInternal
 	}
 
   s.logger.DebugContext(ctx, "rolled back transaction")

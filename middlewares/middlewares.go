@@ -8,7 +8,7 @@ import (
 	"github.com/labstack/echo/v4"
 
 	"arnobot-shared/applog"
-	"arnobot-shared/pkg/errs"
+	"arnobot-shared/apperror"
 	"arnobot-shared/trace"
 )
 
@@ -31,16 +31,16 @@ func ErrHandler(err error, c echo.Context) {
 		return
 	}
 	status := http.StatusInternalServerError
-	responseErr := errs.ErrInternal
+	responseErr := apperror.ErrInternal
 
-	var appErr errs.AppError
+	var appErr apperror.AppError
 	if errors.As(err, &appErr) {
-		status = errs.ToHTTPStatus(appErr)
+		status = apperror.ToHTTPStatus(appErr)
 		responseErr = appErr
 	} else {
 		if he, ok := err.(*echo.HTTPError); ok {
 			status = he.Code
-			responseErr = errs.New(errs.CodeHTTP, he.Error(), he)
+			responseErr = apperror.New(apperror.CodeHTTP, he.Error(), he)
 		}
 	}
 
