@@ -8,7 +8,7 @@ import (
 
 	"arnobot-shared/applog"
 	"arnobot-shared/events"
-	"arnobot-shared/mbtypes"
+	"arnobot-shared/apptype"
 	"arnobot-shared/apperror"
 	"arnobot-shared/topics"
 	"arnobot-shared/trace"
@@ -29,7 +29,7 @@ func NewCoreModuleService(mb *nats.Conn) *CoreModuleService {
 }
 
 func (s *CoreModuleService) ChatMessageNotify(ctx context.Context, arg events.Message) error {
-	payload := mbtypes.CoreChatMessageNotify{
+	payload := apptype.CoreChatMessageNotify{
 		Data:    arg,
 		TraceID: trace.FromContext(ctx),
 	}

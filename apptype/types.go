@@ -1,4 +1,4 @@
-package mbtypes
+package apptype
 
 import (
 	"encoding/json"

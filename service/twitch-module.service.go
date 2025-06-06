@@ -8,7 +8,7 @@ import (
 
 	"arnobot-shared/applog"
 	"arnobot-shared/events"
-	"arnobot-shared/mbtypes"
+	"arnobot-shared/apptype"
 	"arnobot-shared/apperror"
 	"arnobot-shared/topics"
 	"arnobot-shared/trace"
@@ -29,7 +29,7 @@ func NewTwitchModuleService(mb *nats.Conn) *TwitchModuleService {
 }
 
 func (s *TwitchModuleService) ChatSendMessage(ctx context.Context, arg events.MessageSend) error {
-	payload := mbtypes.PlatformChatMessageSend{
+	payload := apptype.PlatformChatMessageSend{
 		Data:    arg,
 		TraceID: trace.FromContext(ctx),
 	}

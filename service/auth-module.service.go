@@ -8,7 +8,7 @@ import (
 
 	"arnobot-shared/applog"
 	"arnobot-shared/data"
-	"arnobot-shared/mbtypes"
+	"arnobot-shared/apptype"
 	"arnobot-shared/apperror"
 	"arnobot-shared/topics"
 	"arnobot-shared/trace"
@@ -29,7 +29,7 @@ func NewAuthModuleService(mb *nats.Conn) *AuthModuleService {
 }
 
 func (s *AuthModuleService) AuthSessionValidate(ctx context.Context, token string) (bool, error) {
-	req := mbtypes.AuthSessionTokenRequest{
+	req := apptype.AuthSessionTokenRequest{
 		Data:    token,
 		TraceID: trace.FromContext(ctx),
 	}
@@ -42,7 +42,7 @@ func (s *AuthModuleService) AuthSessionValidate(ctx context.Context, token strin
 		return false, apperror.ErrInternal
 	}
 
-	var response mbtypes.AuthSessionTokenValidateResponse
+	var response apptype.AuthSessionTokenValidateResponse
 
 	err = response.Decode(msg.Data)
 	if err != nil {
@@ -58,7 +58,7 @@ func (s *AuthModuleService) AuthSessionValidate(ctx context.Context, token strin
 }
 
 func (s *AuthModuleService) AuthSessionGetOwner(ctx context.Context, token string) (*data.User, error) {
-	req := mbtypes.AuthSessionTokenRequest{
+	req := apptype.AuthSessionTokenRequest{
 		TraceID: trace.FromContext(ctx),
 		Data:    token,
 	}
@@ -71,7 +71,7 @@ func (s *AuthModuleService) AuthSessionGetOwner(ctx context.Context, token strin
 		return nil, apperror.ErrInternal
 	}
 
-	var res mbtypes.AuthSessionTokenExchangeResponse
+	var res apptype.AuthSessionTokenExchangeResponse
 
 	err = res.Decode(msg.Data)
 	if err != nil {
@@ -87,7 +87,7 @@ func (s *AuthModuleService) AuthSessionGetOwner(ctx context.Context, token strin
 }
 
 func (s *AuthModuleService) AuthProviderGet(ctx context.Context, data data.AuthProviderGet) (*data.AuthProvider, error) {
-	req := mbtypes.AuthProviderGetRequest{
+	req := apptype.AuthProviderGetRequest{
 		TraceID: trace.FromContext(ctx),
 		Data:    data,
 	}
@@ -100,7 +100,7 @@ func (s *AuthModuleService) AuthProviderGet(ctx context.Context, data data.AuthP
 		return nil, apperror.ErrInternal
 	}
 
-	var res mbtypes.AuthProviderGetResponse
+	var res apptype.AuthProviderGetResponse
 
 	err = res.Decode(msg.Data)
 	if err != nil {
@@ -117,9 +117,9 @@ func (s *AuthModuleService) AuthProviderGet(ctx context.Context, data data.AuthP
 }
 
 func (s *AuthModuleService) AuthProviderUpdateTokens(ctx context.Context, id int32, data data.AuthProviderUpdateTokens) error {
-	req := mbtypes.AuthProviderUpdateTokensRequest{
+	req := apptype.AuthProviderUpdateTokensRequest{
 		TraceID: trace.FromContext(ctx),
-		Data: mbtypes.AuthProviderUpdateTokensPayload{
+		Data: apptype.AuthProviderUpdateTokensPayload{
 			ID:   id,
 			Data: data,
 		},
@@ -133,7 +133,7 @@ func (s *AuthModuleService) AuthProviderUpdateTokens(ctx context.Context, id int
 		return apperror.ErrInternal
 	}
 
-	var res mbtypes.AuthProviderUpdateTokensResponse
+	var res apptype.AuthProviderUpdateTokensResponse
 
 	err = res.Decode(msg.Data)
 	if err != nil {
