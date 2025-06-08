@@ -1,9 +1,11 @@
 package events
 
+import "arnobot-shared/platform"
+
 type EventCommon struct {
-	Platform      string `json:"platform"`
-	BotID         string `json:"botId"`
-	BroadcasterID string `json:"broadcasterId"`
+	Platform      platform.Platform `json:"platform"`
+	BotID         string            `json:"botId"`
+	BroadcasterID string            `json:"broadcasterId"`
 }
 
 type Message struct {

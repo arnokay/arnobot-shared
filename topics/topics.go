@@ -1,13 +1,10 @@
-// Package for message broker topics.
-//
-// Naming convention for app-to-app topics:
-// <service>.<resource>.<action>
-// e.g. auth.token.get
-//
-// Naming conventioon for external-to-app topics:
-// <platform>.<domain>.<resource>.<action>
-// e.g. twitch.chat.message.notify
 package topics
+
+import (
+	"strings"
+
+	"arnobot-shared/platform"
+)
 
 // Auth topics
 const (
@@ -18,12 +15,20 @@ const (
 	AuthSessionTokenExchange = "auth.session-token.exchange"
 )
 
-// Twitch chat topics
+// Platform topics
 const (
-	TwitchChatMessageSend = "twitch.chat.message.send"
+	PlatformChatMessageSend platformTopic = platformPlaceholder + ".chat.message.send"
 )
 
 // Core topics
 const (
 	CoreChatMessageNotify = "core.chat-message.notify"
 )
+
+type platformTopic string
+
+func (t platformTopic) Platform(platform platform.Platform) string {
+  return strings.Replace(string(t), platformPlaceholder, platform.String(), 1)
+}
+
+const platformPlaceholder = "{platform}"

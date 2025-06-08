@@ -21,6 +21,7 @@ const (
 	CodeForbidden      ErrorCode = "forbidden"
 	CodeExternal       ErrorCode = "external"
 	CodeNotImplemented ErrorCode = "not_implemented"
+	CodeNoAction       ErrorCode = "no_action"
 )
 
 var (
@@ -33,6 +34,7 @@ var (
 	ErrExternal       = AppError{Code: CodeExternal, Message: "external error"}
 	ErrForbidden      = AppError{Code: CodeForbidden, Message: "no access"}
 	ErrNotImplemented = AppError{Code: CodeNotImplemented, Message: "not implemented"}
+	ErrNoAction       = AppError{Code: CodeNoAction, Message: "no action is needed"}
 )
 
 type AppError struct {
