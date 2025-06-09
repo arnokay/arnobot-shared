@@ -28,7 +28,7 @@ const (
 type platformTopic string
 
 func (t platformTopic) Platform(platform platform.Platform) string {
-  return strings.Replace(string(t), platformPlaceholder, platform.String(), 1)
+	return strings.Replace(string(t), platformPlaceholder, platform.String(), 1)
 }
 
 const platformPlaceholder = "{platform}"
