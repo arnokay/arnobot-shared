@@ -6,6 +6,15 @@ import (
 	"arnobot-shared/platform"
 )
 
+const (
+	Any = "*"
+)
+
+const (
+  platformPlaceholder      = "{platform}"
+  broadcasterIDPlaceholder = "{broadcasterID}"
+)
+
 // Auth topics
 const (
 	AuthProviderTokenGet          = "auth.provider-token.get"
@@ -15,20 +24,38 @@ const (
 	AuthSessionTokenExchange = "auth.session-token.exchange"
 )
 
-// Platform topics
+type platformBroadcasterTopic = string
+
 const (
-	PlatformChatMessageSend platformTopic = platformPlaceholder + ".chat.message.send"
+	PlatformBroadcasterChatMessageNotify platformBroadcasterTopic = "chat.message.notify.{platform}.{broadcasterID}"
+	PlatformBroadcasterChatMessageSend   platformBroadcasterTopic = "chat.message.send.{platform}.{broadcasterID}"
 )
 
-// Core topics
-const (
-	CoreChatMessageNotify = "core.chat-message.notify"
-)
-
-type platformTopic string
-
-func (t platformTopic) Platform(platform platform.Platform) string {
-	return strings.Replace(string(t), platformPlaceholder, platform.String(), 1)
+type platformBroadcaster struct {
+	platform      platform.Platform
+	broadcasterID string
 }
 
-const platformPlaceholder = "{platform}"
+func PlatformBroadcaster() platformBroadcaster {
+	return platformBroadcaster{
+		platform:      platform.All,
+		broadcasterID: Any,
+	}
+}
+
+func (t *platformBroadcaster) Platform(platform platform.Platform) *platformBroadcaster {
+	t.platform = platform
+	return t
+}
+
+func (t *platformBroadcaster) BroadcasterID(broadcasterID string) *platformBroadcaster {
+	t.broadcasterID = broadcasterID
+	return t
+}
+
+func (t *platformBroadcaster) Build(topic platformBroadcasterTopic) string {
+	topic = strings.Replace(string(topic), platformPlaceholder, t.platform.String(), 1)
+	topic = strings.Replace(string(topic), broadcasterIDPlaceholder, t.broadcasterID, 1)
+  return topic
+}
+
