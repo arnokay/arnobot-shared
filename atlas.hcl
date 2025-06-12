@@ -1,5 +1,5 @@
 env "local" {
-  src = "file://db/schemas/schema.sql"
+  src = "file://db/schemas"
 
   url = getenv("DB_DSN")
 

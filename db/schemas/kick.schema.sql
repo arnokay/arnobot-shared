@@ -1,0 +1,39 @@
+-- -- atlas:import public.schema.sql
+--
+--
+-- CREATE SCHEMA kick;
+--
+-- CREATE TYPE kick.bot_role AS ENUM (
+--     'reader',
+--     'writer',
+--     'moderator',
+--     'owner'
+-- );
+--
+-- CREATE TABLE kick.default_broadcaster (
+--     main boolean PRIMARY KEY DEFAULT TRUE,
+--     broadcaster_id varchar(100) NOT NULL
+-- );
+--
+-- CREATE TABLE kick.default_bot (
+--     main boolean PRIMARY KEY DEFAULT TRUE,
+--     bot_id varchar(100) NOT NULL
+-- );
+--
+-- CREATE TABLE kick.bots (
+--     user_id uuid NOT NULL,
+--     broadcaster_id varchar(100) NOT NULL,
+--     bot_id varchar(100) NOT NULL,
+--     ROLE kick.bot_role NOT NULL DEFAULT 'user',
+--     PRIMARY KEY (user_id, bot_id),
+--     FOREIGN KEY (user_id) REFERENCES public.users (id) ON UPDATE CASCADE ON DELETE RESTRICT
+-- );
+--
+-- CREATE TABLE kick.selected_bots (
+--     user_id uuid NOT NULL PRIMARY KEY,
+--     broadcaster_id varchar(100) NOT NULL,
+--     bot_id varchar(100) NOT NULL,
+--     updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+--     FOREIGN KEY (user_id, bot_id) REFERENCES kick.bots (user_id, bot_id) ON UPDATE CASCADE ON DELETE RESTRICT
+-- );
+--
