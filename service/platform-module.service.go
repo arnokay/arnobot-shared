@@ -36,7 +36,9 @@ func (s *PlatformModuleService) ChatSendMessage(ctx context.Context, arg events.
 
 	payloadBytes, _ := payload.Encode()
 
-	err := s.mb.Publish(topics.PlatformChatMessageSend.Platform(arg.Platform), payloadBytes)
+	topic := topics.PlatformBroadcasterChatMessageSend.Build(arg.Platform, arg.BroadcasterID)
+
+	err := s.mb.Publish(topic, payloadBytes)
 	if err != nil {
 		s.logger.ErrorContext(ctx, "cannot send chat message", "err", err, "platform", arg.Platform)
 		return apperror.ErrInternal

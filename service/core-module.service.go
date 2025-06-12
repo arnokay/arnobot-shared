@@ -6,10 +6,10 @@ import (
 
 	"github.com/nats-io/nats.go"
 
-	"arnobot-shared/applog"
-	"arnobot-shared/events"
-	"arnobot-shared/apptype"
 	"arnobot-shared/apperror"
+	"arnobot-shared/applog"
+	"arnobot-shared/apptype"
+	"arnobot-shared/events"
 	"arnobot-shared/topics"
 	"arnobot-shared/trace"
 )
@@ -36,7 +36,9 @@ func (s *CoreModuleService) ChatMessageNotify(ctx context.Context, arg events.Me
 
 	payloadBytes, _ := payload.Encode()
 
-	err := s.mb.Publish(topics.CoreChatMessageNotify, payloadBytes)
+	topic := topics.PlatformBroadcasterChatMessageNotify.Build(arg.Platform, arg.BroadcasterID)
+
+	err := s.mb.Publish(topic, payloadBytes)
 	if err != nil {
 		s.logger.ErrorContext(ctx, "cannot notify about new message", "err", err)
 		return apperror.ErrInternal
