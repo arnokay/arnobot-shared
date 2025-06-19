@@ -3,7 +3,7 @@ package topics
 import (
 	"strings"
 
-	"arnobot-shared/platform"
+	"github.com/arnokay/arnobot-shared/platform"
 )
 
 const (

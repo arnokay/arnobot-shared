@@ -3,7 +3,7 @@ package appctx
 import (
 	"context"
 
-	"arnobot-shared/data"
+	"github.com/arnokay/arnobot-shared/data"
 )
 
 type ctxKey string

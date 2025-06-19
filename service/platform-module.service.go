@@ -6,12 +6,12 @@ import (
 
 	"github.com/nats-io/nats.go"
 
-	"arnobot-shared/apperror"
-	"arnobot-shared/applog"
-	"arnobot-shared/apptype"
-	"arnobot-shared/events"
-	"arnobot-shared/topics"
-	"arnobot-shared/trace"
+	"github.com/arnokay/arnobot-shared/apperror"
+	"github.com/arnokay/arnobot-shared/applog"
+	"github.com/arnokay/arnobot-shared/apptype"
+	"github.com/arnokay/arnobot-shared/events"
+	"github.com/arnokay/arnobot-shared/topics"
+	"github.com/arnokay/arnobot-shared/trace"
 )
 
 type PlatformModuleService struct {

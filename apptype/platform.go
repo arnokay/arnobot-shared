@@ -1,5 +1,5 @@
 package apptype
 
-import "arnobot-shared/events"
+import "github.com/arnokay/arnobot-shared/events"
 
 type PlatformChatMessageSend = Request[events.MessageSend]

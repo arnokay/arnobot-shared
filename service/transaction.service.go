@@ -5,8 +5,8 @@ import (
 	"errors"
 	"log/slog"
 
-	"arnobot-shared/applog"
-	"arnobot-shared/apperror"
+	"github.com/arnokay/arnobot-shared/applog"
+	"github.com/arnokay/arnobot-shared/apperror"
 
 	"github.com/jackc/pgx/v5"
 )

@@ -1,6 +1,6 @@
 package events
 
-import "arnobot-shared/platform"
+import "github.com/arnokay/arnobot-shared/platform"
 
 type EventCommon struct {
 	Platform      platform.Platform `json:"platform"`

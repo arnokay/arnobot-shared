@@ -7,9 +7,9 @@ import (
 
 	"github.com/nats-io/nats.go"
 
-	"arnobot-shared/applog"
-	"arnobot-shared/pkg/assert"
-	"arnobot-shared/apperror"
+	"github.com/arnokay/arnobot-shared/applog"
+	"github.com/arnokay/arnobot-shared/pkg/assert"
+	"github.com/arnokay/arnobot-shared/apperror"
 )
 
 type MessageBrokerService struct {

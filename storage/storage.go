@@ -9,10 +9,10 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 
-	"arnobot-shared/applog"
-	"arnobot-shared/db"
-	"arnobot-shared/apperror"
-	"arnobot-shared/service"
+	"github.com/arnokay/arnobot-shared/applog"
+	"github.com/arnokay/arnobot-shared/db"
+	"github.com/arnokay/arnobot-shared/apperror"
+	"github.com/arnokay/arnobot-shared/service"
 )
 
 type Storager interface {

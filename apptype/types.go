@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"arnobot-shared/apperror"
+	"github.com/arnokay/arnobot-shared/apperror"
 )
 
 type Request[T any] struct {

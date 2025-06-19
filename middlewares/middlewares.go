@@ -7,9 +7,9 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"arnobot-shared/applog"
-	"arnobot-shared/apperror"
-	"arnobot-shared/trace"
+	"github.com/arnokay/arnobot-shared/applog"
+	"github.com/arnokay/arnobot-shared/apperror"
+	"github.com/arnokay/arnobot-shared/trace"
 )
 
 func AttachTraceID(next echo.HandlerFunc) echo.HandlerFunc {

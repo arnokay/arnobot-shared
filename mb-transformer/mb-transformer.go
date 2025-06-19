@@ -1,7 +1,7 @@
 package mbtransformer
 
 import (
-	"arnobot-shared/pkg/assert"
+	"github.com/arnokay/arnobot-shared/pkg/assert"
 	"encoding/json"
 )
 

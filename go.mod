@@ -1,4 +1,4 @@
-module arnobot-shared
+module github.com/arnokay/arnobot-shared
 
 go 1.23.0
 

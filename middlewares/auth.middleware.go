@@ -6,10 +6,10 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"arnobot-shared/appctx"
-	"arnobot-shared/applog"
-	"arnobot-shared/apperror"
-	"arnobot-shared/service"
+	"github.com/arnokay/arnobot-shared/appctx"
+	"github.com/arnokay/arnobot-shared/applog"
+	"github.com/arnokay/arnobot-shared/apperror"
+	"github.com/arnokay/arnobot-shared/service"
 )
 
 type AuthMiddlewares struct {

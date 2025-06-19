@@ -5,8 +5,8 @@ import (
 	"io"
 	"log/slog"
 
-	"arnobot-shared/consts"
-	"arnobot-shared/trace"
+	"github.com/arnokay/arnobot-shared/consts"
+	"github.com/arnokay/arnobot-shared/trace"
 )
 
 type appHandler struct {

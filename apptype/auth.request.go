@@ -1,6 +1,6 @@
 package apptype
 
-import "arnobot-shared/data"
+import "github.com/arnokay/arnobot-shared/data"
 
 type (
 	AuthSessionTokenRequest          = Request[string]

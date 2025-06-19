@@ -5,7 +5,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"arnobot-shared/db"
+	"github.com/arnokay/arnobot-shared/db"
 )
 
 type TwitchDefaultBot struct {
