@@ -29,3 +29,24 @@ CREATE TABLE public.user_platform_accounts (
     FOREIGN KEY (user_id) REFERENCES public.users (id) ON UPDATE CASCADE ON DELETE RESTRICT,
     FOREIGN KEY (platform) REFERENCES public.supported_platforms (platform) ON UPDATE CASCADE ON DELETE RESTRICT
 );
+
+CREATE TABLE public.whitelist (
+  platform varchar(50) NOT NULL,
+  platform_user_id varchar(100) NOT NULL,
+  platform_user_name varchar(100) NOT NULL,
+  platform_user_login varchar(100) NOT NULL,
+  user_id uuid NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES public.users (id) ON UPDATE CASCADE ON DELETE RESTRICT,
+  FOREIGN KEY (platform) REFERENCES public.supported_platforms (platform) ON UPDATE CASCADE ON DELETE RESTRICT
+);
+
+CREATE TABLE public.blacklist (
+  platform varchar(50) NOT NULL,
+  platform_user_id varchar(100) NOT NULL,
+  platform_user_name varchar(100) NOT NULL,
+  platform_user_login varchar(100) NOT NULL,
+  user_id uuid NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES public.users (id) ON UPDATE CASCADE ON DELETE RESTRICT,
+  FOREIGN KEY (platform) REFERENCES public.supported_platforms (platform) ON UPDATE CASCADE ON DELETE RESTRICT
+);
+

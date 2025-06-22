@@ -98,48 +98,6 @@ func (ns NullTwitchBotRole) Value() (driver.Value, error) {
 	return string(ns.TwitchBotRole), nil
 }
 
-type TwitchWebhookStatus string
-
-const (
-	TwitchWebhookStatusActive      TwitchWebhookStatus = "active"
-	TwitchWebhookStatusDeactivated TwitchWebhookStatus = "deactivated"
-)
-
-func (e *TwitchWebhookStatus) Scan(src interface{}) error {
-	switch s := src.(type) {
-	case []byte:
-		*e = TwitchWebhookStatus(s)
-	case string:
-		*e = TwitchWebhookStatus(s)
-	default:
-		return fmt.Errorf("unsupported scan type for TwitchWebhookStatus: %T", src)
-	}
-	return nil
-}
-
-type NullTwitchWebhookStatus struct {
-	TwitchWebhookStatus TwitchWebhookStatus
-	Valid               bool // Valid is true if TwitchWebhookStatus is not NULL
-}
-
-// Scan implements the Scanner interface.
-func (ns *NullTwitchWebhookStatus) Scan(value interface{}) error {
-	if value == nil {
-		ns.TwitchWebhookStatus, ns.Valid = "", false
-		return nil
-	}
-	ns.Valid = true
-	return ns.TwitchWebhookStatus.Scan(value)
-}
-
-// Value implements the driver Valuer interface.
-func (ns NullTwitchWebhookStatus) Value() (driver.Value, error) {
-	if !ns.Valid {
-		return nil, nil
-	}
-	return string(ns.TwitchWebhookStatus), nil
-}
-
 type UserStatus string
 
 const (
@@ -203,6 +161,14 @@ type AuthSession struct {
 	UserID     uuid.UUID
 	CreatedAt  time.Time
 	LastUsedAt time.Time
+}
+
+type Blacklist struct {
+	Platform          string
+	PlatformUserID    string
+	PlatformUserName  string
+	PlatformUserLogin string
+	UserID            uuid.UUID
 }
 
 type CoreChatterGroup struct {
@@ -288,6 +254,14 @@ type User struct {
 }
 
 type UserPlatformAccount struct {
+	Platform          string
+	PlatformUserID    string
+	PlatformUserName  string
+	PlatformUserLogin string
+	UserID            uuid.UUID
+}
+
+type Whitelist struct {
 	Platform          string
 	PlatformUserID    string
 	PlatformUserName  string

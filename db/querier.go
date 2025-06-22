@@ -38,6 +38,9 @@ type Querier interface {
 	UserDelete(ctx context.Context, id uuid.UUID) (int64, error)
 	UserGetById(ctx context.Context, id uuid.UUID) (User, error)
 	UserUpdate(ctx context.Context, arg UserUpdateParams) (int64, error)
+	WhitelistCreate(ctx context.Context, arg WhitelistCreateParams) (Whitelist, error)
+	WhitelistDelete(ctx context.Context, arg WhitelistDeleteParams) (int64, error)
+	WhitelistGetOne(ctx context.Context, arg WhitelistGetOneParams) (Whitelist, error)
 }
 
 var _ Querier = (*Queries)(nil)
