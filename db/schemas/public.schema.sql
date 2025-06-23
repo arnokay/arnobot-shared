@@ -7,8 +7,8 @@ CREATE TYPE public.user_status AS ENUM (
     'deleted'
 );
 
-CREATE TABLE public.supported_platforms (
-    platform varchar(50) PRIMARY KEY
+CREATE TYPE public.platform AS ENUM (
+    'twitch'
 );
 
 CREATE TABLE public.users (
@@ -20,33 +20,30 @@ CREATE TABLE public.users (
 );
 
 CREATE TABLE public.user_platform_accounts (
-    platform varchar(50) NOT NULL,
+    platform public.platform NOT NULL,
     platform_user_id varchar(100) NOT NULL,
     platform_user_name varchar(100) NOT NULL,
     platform_user_login varchar(100) NOT NULL,
     user_id uuid NOT NULL,
     PRIMARY KEY (platform, platform_user_id),
-    FOREIGN KEY (user_id) REFERENCES public.users (id) ON UPDATE CASCADE ON DELETE RESTRICT,
-    FOREIGN KEY (platform) REFERENCES public.supported_platforms (platform) ON UPDATE CASCADE ON DELETE RESTRICT
+    FOREIGN KEY (user_id) REFERENCES public.users (id) ON UPDATE CASCADE ON DELETE RESTRICT
 );
 
 CREATE TABLE public.whitelist (
-  platform varchar(50) NOT NULL,
-  platform_user_id varchar(100) NOT NULL,
-  platform_user_name varchar(100) NOT NULL,
-  platform_user_login varchar(100) NOT NULL,
-  user_id uuid NOT NULL,
-  FOREIGN KEY (user_id) REFERENCES public.users (id) ON UPDATE CASCADE ON DELETE RESTRICT,
-  FOREIGN KEY (platform) REFERENCES public.supported_platforms (platform) ON UPDATE CASCADE ON DELETE RESTRICT
+    platform public.platform NOT NULL,
+    platform_user_id varchar(100),
+    platform_user_name varchar(100),
+    platform_user_login varchar(100),
+    user_id uuid,
+    FOREIGN KEY (user_id) REFERENCES public.users (id) ON UPDATE CASCADE ON DELETE RESTRICT
 );
 
 CREATE TABLE public.blacklist (
-  platform varchar(50) NOT NULL,
-  platform_user_id varchar(100) NOT NULL,
-  platform_user_name varchar(100) NOT NULL,
-  platform_user_login varchar(100) NOT NULL,
-  user_id uuid NOT NULL,
-  FOREIGN KEY (user_id) REFERENCES public.users (id) ON UPDATE CASCADE ON DELETE RESTRICT,
-  FOREIGN KEY (platform) REFERENCES public.supported_platforms (platform) ON UPDATE CASCADE ON DELETE RESTRICT
+    platform public.platform NOT NULL,
+    platform_user_id varchar(100),
+    platform_user_name varchar(100),
+    platform_user_login varchar(100),
+    user_id uuid,
+    FOREIGN KEY (user_id) REFERENCES public.users (id) ON UPDATE CASCADE ON DELETE RESTRICT
 );
 

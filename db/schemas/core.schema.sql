@@ -4,7 +4,7 @@
 CREATE SCHEMA IF NOT EXISTS core;
 
 CREATE TABLE core.first_time_messages (
-    platform varchar(50) NOT NULL,
+    platform public.platform NOT NULL,
     chatter_id varchar(100) NOT NULL,
     chatter_name varchar(100) NOT NULL,
     chatter_login varchar(100) NOT NULL,
@@ -15,7 +15,6 @@ CREATE TABLE core.first_time_messages (
     message text NOT NULL,
     created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES public.users (id) ON UPDATE CASCADE ON DELETE RESTRICT,
-    FOREIGN KEY (platform) REFERENCES public.supported_platforms (platform) ON UPDATE CASCADE ON DELETE RESTRICT,
     UNIQUE (platform, chatter_id)
 );
 
@@ -29,13 +28,12 @@ CREATE TABLE core.chatter_groups (
 
 CREATE TABLE core.group_chatters (
     group_id integer NOT NULL,
-    platform varchar(50) NOT NULL,
+    platform public.platform NOT NULL,
     chatter_id varchar(100) NOT NULL,
     chatter_name varchar(100) NOT NULL,
     chatter_login varchar(100) NOT NULL,
     UNIQUE (group_id, platform, chatter_id),
     UNIQUE (group_id, platform, chatter_login),
-    FOREIGN KEY (platform) REFERENCES public.supported_platforms (platform) ON UPDATE CASCADE ON DELETE RESTRICT,
     FOREIGN KEY (group_id) REFERENCES core.chatter_groups (id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 

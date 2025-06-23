@@ -4,19 +4,20 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/arnokay/arnobot-shared/db"
+	"github.com/arnokay/arnobot-shared/platform"
 )
 
 type Whitelist struct {
-	Platform          string    `json:"platform"`
-	PlatformUserID    string    `json:"platformUserId"`
-	PlatformUserName  string    `json:"platformUserName"`
-	PlatformUserLogin string    `json:"platformUserLogin"`
-	UserID            uuid.UUID `json:"userId"`
+	Platform          platform.Platform `json:"platform"`
+	PlatformUserID    *string           `json:"platformUserId"`
+	PlatformUserName  *string           `json:"platformUserName"`
+	PlatformUserLogin *string           `json:"platformUserLogin"`
+	UserID            *uuid.UUID        `json:"userId"`
 }
 
 func NewWhitelistFromDB(fromDB db.Whitelist) Whitelist {
 	return Whitelist{
-		Platform:          fromDB.Platform,
+		Platform:          platform.Platform(fromDB.Platform),
 		PlatformUserID:    fromDB.PlatformUserID,
 		PlatformUserName:  fromDB.PlatformUserName,
 		PlatformUserLogin: fromDB.PlatformUserLogin,
@@ -25,11 +26,11 @@ func NewWhitelistFromDB(fromDB db.Whitelist) Whitelist {
 }
 
 type WhitelistCreate struct {
-	Platform          string    `json:"platform"`
-	PlatformUserID    string    `json:"platformUserId"`
-	PlatformUserName  string    `json:"platformUserName"`
-	PlatformUserLogin string    `json:"platformUserLogin"`
-	UserID            uuid.UUID `json:"userId"`
+	Platform          string     `json:"platform"`
+	PlatformUserID    *string    `json:"platformUserId"`
+	PlatformUserName  *string    `json:"platformUserName"`
+	PlatformUserLogin *string    `json:"platformUserLogin"`
+	UserID            *uuid.UUID `json:"userId"`
 }
 
 type WhitelistGetOne struct {
@@ -42,7 +43,7 @@ type WhitelistGetOne struct {
 
 func (w WhitelistGetOne) ToDB() db.WhitelistGetOneParams {
 	return db.WhitelistGetOneParams{
-		Platform:          w.Platform,
+		Platform:          db.Platform(w.Platform),
 		PlatformUserID:    w.PlatformUserID,
 		PlatformUserName:  w.PlatformUserName,
 		PlatformUserLogin: w.PlatformUserLogin,

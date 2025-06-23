@@ -19,11 +19,11 @@ RETURNING
 `
 
 type WhitelistCreateParams struct {
-	Platform          string
-	PlatformUserID    string
-	PlatformUserName  string
-	PlatformUserLogin string
-	UserID            uuid.UUID
+	Platform          Platform
+	PlatformUserID    *string
+	PlatformUserName  *string
+	PlatformUserLogin *string
+	UserID            *uuid.UUID
 }
 
 func (q *Queries) WhitelistCreate(ctx context.Context, arg WhitelistCreateParams) (Whitelist, error) {
@@ -48,18 +48,18 @@ func (q *Queries) WhitelistCreate(ctx context.Context, arg WhitelistCreateParams
 const whitelistDelete = `-- name: WhitelistDelete :execrows
 DELETE FROM public.whitelist
 WHERE platform = $1
-    AND (($2::string IS NULL
+    AND (($2::varchar(100) IS NULL
             OR platform_user_id = $2)
-        AND ($3::string IS NULL
+        AND ($3::varchar(100) IS NULL
             OR platform_user_name = $3)
-        AND ($4::string IS NULL
+        AND ($4::varchar(100) IS NULL
             OR platform_user_login = $4)
         AND ($5::uuid IS NULL
             OR user_id = $5))
 `
 
 type WhitelistDeleteParams struct {
-	Platform          string
+	Platform          Platform
 	PlatformUserID    *string
 	PlatformUserName  *string
 	PlatformUserLogin *string
@@ -87,18 +87,18 @@ FROM
     public.whitelist
 WHERE
     platform = $1
-    AND (($2::string IS NULL
+    AND (($2::varchar(100) IS NULL
             OR platform_user_id = $2)
-        OR ($3::string IS NULL
+        OR ($3::varchar(100) IS NULL
             OR platform_user_name = $3)
-        OR ($4::string IS NULL
+        OR ($4::varchar(100) IS NULL
             OR platform_user_login = $4)
         OR ($5::uuid IS NULL
             OR user_id = $5))
 `
 
 type WhitelistGetOneParams struct {
-	Platform          string
+	Platform          Platform
 	PlatformUserID    *string
 	PlatformUserName  *string
 	PlatformUserLogin *string

@@ -54,6 +54,47 @@ func (ns NullAuthSessionStatus) Value() (driver.Value, error) {
 	return string(ns.AuthSessionStatus), nil
 }
 
+type Platform string
+
+const (
+	PlatformTwitch Platform = "twitch"
+)
+
+func (e *Platform) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = Platform(s)
+	case string:
+		*e = Platform(s)
+	default:
+		return fmt.Errorf("unsupported scan type for Platform: %T", src)
+	}
+	return nil
+}
+
+type NullPlatform struct {
+	Platform Platform
+	Valid    bool // Valid is true if Platform is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullPlatform) Scan(value interface{}) error {
+	if value == nil {
+		ns.Platform, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.Platform.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullPlatform) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.Platform), nil
+}
+
 type TwitchBotRole string
 
 const (
@@ -164,11 +205,11 @@ type AuthSession struct {
 }
 
 type Blacklist struct {
-	Platform          string
-	PlatformUserID    string
-	PlatformUserName  string
-	PlatformUserLogin string
-	UserID            uuid.UUID
+	Platform          Platform
+	PlatformUserID    *string
+	PlatformUserName  *string
+	PlatformUserLogin *string
+	UserID            *uuid.UUID
 }
 
 type CoreChatterGroup struct {
@@ -178,7 +219,7 @@ type CoreChatterGroup struct {
 }
 
 type CoreFirstTimeMessage struct {
-	Platform         string
+	Platform         Platform
 	ChatterID        string
 	ChatterName      string
 	ChatterLogin     string
@@ -192,7 +233,7 @@ type CoreFirstTimeMessage struct {
 
 type CoreGroupChatter struct {
 	GroupID      int32
-	Platform     string
+	Platform     Platform
 	ChatterID    string
 	ChatterName  string
 	ChatterLogin string
@@ -215,10 +256,6 @@ type CoreUserCounter struct {
 type CoreUserPrefix struct {
 	UserID uuid.UUID
 	Prefix string
-}
-
-type SupportedPlatform struct {
-	Platform string
 }
 
 type TwitchBot struct {
@@ -254,7 +291,7 @@ type User struct {
 }
 
 type UserPlatformAccount struct {
-	Platform          string
+	Platform          Platform
 	PlatformUserID    string
 	PlatformUserName  string
 	PlatformUserLogin string
@@ -262,9 +299,9 @@ type UserPlatformAccount struct {
 }
 
 type Whitelist struct {
-	Platform          string
-	PlatformUserID    string
-	PlatformUserName  string
-	PlatformUserLogin string
-	UserID            uuid.UUID
+	Platform          Platform
+	PlatformUserID    *string
+	PlatformUserName  *string
+	PlatformUserLogin *string
+	UserID            *uuid.UUID
 }
