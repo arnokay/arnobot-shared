@@ -14,21 +14,21 @@ import (
 	"github.com/arnokay/arnobot-shared/trace"
 )
 
-type CoreModuleService struct {
+type PlatformModuleOut struct {
 	mb     *nats.Conn
 	logger *slog.Logger
 }
 
-func NewCoreModuleService(mb *nats.Conn) *CoreModuleService {
-	logger := applog.NewServiceLogger("core-module-service")
+func NewPlatformModuleOut(mb *nats.Conn) *PlatformModuleOut {
+	logger := applog.NewServiceLogger("platform-module-out")
 
-	return &CoreModuleService{
+	return &PlatformModuleOut{
 		mb:     mb,
 		logger: logger,
 	}
 }
 
-func (s *CoreModuleService) ChatMessageNotify(ctx context.Context, arg events.Message) error {
+func (s *PlatformModuleOut) ChatMessageNotify(ctx context.Context, arg events.Message) error {
 	payload := apptype.CoreChatMessageNotify{
 		Data:    arg,
 		TraceID: trace.FromContext(ctx),

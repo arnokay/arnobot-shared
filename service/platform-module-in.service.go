@@ -15,21 +15,21 @@ import (
 	"github.com/arnokay/arnobot-shared/trace"
 )
 
-type PlatformModuleService struct {
+type PlatformModuleIn struct {
 	mb     *nats.Conn
 	logger *slog.Logger
 }
 
-func NewPlatformModuleService(mb *nats.Conn) *PlatformModuleService {
+func NewPlatformModuleIn(mb *nats.Conn) *PlatformModuleIn {
 	logger := applog.NewServiceLogger("platform-module-service")
 
-	return &PlatformModuleService{
+	return &PlatformModuleIn{
 		mb:     mb,
 		logger: logger,
 	}
 }
 
-func (s *PlatformModuleService) StartBot(ctx context.Context, arg data.PlatformToggleBot) error {
+func (s *PlatformModuleIn) StartBot(ctx context.Context, arg data.PlatformToggleBot) error {
 	req := apptype.PlatformStartBot{
 		Data:    arg,
 		TraceID: trace.FromContext(ctx),
@@ -50,7 +50,7 @@ func (s *PlatformModuleService) StartBot(ctx context.Context, arg data.PlatformT
   return nil
 }
 
-func (s *PlatformModuleService) StopBot(ctx context.Context, arg data.PlatformToggleBot) error {
+func (s *PlatformModuleIn) StopBot(ctx context.Context, arg data.PlatformToggleBot) error {
 	req := apptype.PlatformStopBot{
 		Data:    arg,
 		TraceID: trace.FromContext(ctx),
@@ -71,7 +71,7 @@ func (s *PlatformModuleService) StopBot(ctx context.Context, arg data.PlatformTo
   return nil
 }
 
-func (s *PlatformModuleService) ChatSendMessage(ctx context.Context, arg events.MessageSend) error {
+func (s *PlatformModuleIn) ChatSendMessage(ctx context.Context, arg events.MessageSend) error {
 	payload := apptype.PlatformChatMessageSend{
 		Data:    arg,
 		TraceID: trace.FromContext(ctx),
