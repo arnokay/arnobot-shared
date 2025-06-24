@@ -24,15 +24,39 @@ const (
 	AuthSessionTokenExchange = "auth.session-token.exchange"
 )
 
-type platformBroadcasterTopic string
+type topicBuilder struct {
+	original string
+	modified string
+}
 
-func (p platformBroadcasterTopic) Build(platform platform.Platform, broadcasterID string) string {
-  topic := strings.Replace(string(p), platformPlaceholder, platform.String(), 1)
-	topic = strings.Replace(topic, broadcasterIDPlaceholder, broadcasterID, 1)
-	return topic
+func TopicBuilder(topic string) *topicBuilder {
+	return &topicBuilder{
+		original: topic,
+		modified: topic,
+	}
+}
+
+func (b *topicBuilder) Platform(platform platform.Platform) *topicBuilder {
+	b.modified = strings.Replace(b.modified, platformPlaceholder, platform.String(), 1)
+	return b
+}
+
+func (b *topicBuilder) BroadcasterID(broadcasterID string) *topicBuilder {
+	b.modified = strings.Replace(b.modified, broadcasterIDPlaceholder, broadcasterID, 1)
+	return b
+}
+
+func (b *topicBuilder) Build() string {
+	return b.modified
+}
+
+func (b *topicBuilder) Original() string {
+	return b.original
 }
 
 const (
-	PlatformBroadcasterChatMessageNotify platformBroadcasterTopic = "chat.message.notify.{platform}.{broadcasterID}"
-	PlatformBroadcasterChatMessageSend   platformBroadcasterTopic = "chat.message.send.{platform}.{broadcasterID}"
+	PlatformBroadcasterChatMessageNotify = "chat.message.notify.{platform}.{broadcasterID}"
+	PlatformBroadcasterChatMessageSend   = "chat.message.send.{platform}.{broadcasterID}"
+	PlatformStartBot                     = "bot.{platform}.start"
+	PlatformStopBot                      = "bot.{platform}.stop"
 )

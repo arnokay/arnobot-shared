@@ -36,7 +36,10 @@ func (s *CoreModuleService) ChatMessageNotify(ctx context.Context, arg events.Me
 
 	payloadBytes, _ := payload.Encode()
 
-	topic := topics.PlatformBroadcasterChatMessageNotify.Build(arg.Platform, arg.BroadcasterID)
+	topicBulder := topics.TopicBuilder(topics.PlatformBroadcasterChatMessageNotify)
+	topicBulder.Platform(arg.Platform)
+  topicBulder.BroadcasterID(arg.BroadcasterID)
+	topic := topicBulder.Build()
 
 	err := s.mb.Publish(topic, payloadBytes)
 	if err != nil {
