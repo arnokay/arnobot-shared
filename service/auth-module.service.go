@@ -14,21 +14,21 @@ import (
 	"github.com/arnokay/arnobot-shared/trace"
 )
 
-type AuthModuleService struct {
+type AuthModule struct {
 	mb     *nats.Conn
 	logger *slog.Logger
 }
 
-func NewAuthModuleService(mb *nats.Conn) *AuthModuleService {
+func NewAuthModule(mb *nats.Conn) *AuthModule {
 	logger := applog.NewServiceLogger("auth-module-service")
 
-	return &AuthModuleService{
+	return &AuthModule{
 		mb:     mb,
 		logger: logger,
 	}
 }
 
-func (s *AuthModuleService) AuthSessionValidate(ctx context.Context, token string) (bool, error) {
+func (s *AuthModule) AuthSessionValidate(ctx context.Context, token string) (bool, error) {
 	req := apptype.AuthSessionTokenRequest{
 		Data:    token,
 		TraceID: trace.FromContext(ctx),
@@ -57,7 +57,7 @@ func (s *AuthModuleService) AuthSessionValidate(ctx context.Context, token strin
 	return true, nil
 }
 
-func (s *AuthModuleService) AuthSessionGetOwner(ctx context.Context, token string) (*data.User, error) {
+func (s *AuthModule) AuthSessionGetOwner(ctx context.Context, token string) (*data.User, error) {
 	req := apptype.AuthSessionTokenRequest{
 		TraceID: trace.FromContext(ctx),
 		Data:    token,
@@ -86,7 +86,7 @@ func (s *AuthModuleService) AuthSessionGetOwner(ctx context.Context, token strin
 	return res.Data, nil
 }
 
-func (s *AuthModuleService) AuthProviderGet(ctx context.Context, data data.AuthProviderGet) (*data.AuthProvider, error) {
+func (s *AuthModule) AuthProviderGet(ctx context.Context, data data.AuthProviderGet) (*data.AuthProvider, error) {
 	req := apptype.AuthProviderGetRequest{
 		TraceID: trace.FromContext(ctx),
 		Data:    data,
@@ -116,7 +116,7 @@ func (s *AuthModuleService) AuthProviderGet(ctx context.Context, data data.AuthP
 	return res.Data, nil
 }
 
-func (s *AuthModuleService) AuthProviderUpdateTokens(ctx context.Context, id int32, data data.AuthProviderUpdateTokens) error {
+func (s *AuthModule) AuthProviderUpdateTokens(ctx context.Context, id int32, data data.AuthProviderUpdateTokens) error {
 	req := apptype.AuthProviderUpdateTokensRequest{
 		TraceID: trace.FromContext(ctx),
 		Data: apptype.AuthProviderUpdateTokensPayload{

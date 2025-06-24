@@ -7,24 +7,24 @@ import (
 	"github.com/labstack/echo/v4"
 
 	"github.com/arnokay/arnobot-shared/appctx"
-	"github.com/arnokay/arnobot-shared/applog"
 	"github.com/arnokay/arnobot-shared/apperror"
+	"github.com/arnokay/arnobot-shared/applog"
 	"github.com/arnokay/arnobot-shared/service"
 )
 
 type AuthMiddlewares struct {
-	logger            *slog.Logger
-	authModuleService *service.AuthModuleService
+	logger     *slog.Logger
+	authModule *service.AuthModule
 }
 
 func NewAuthMiddleware(
-	authModuleService *service.AuthModuleService,
+	authModule *service.AuthModule,
 ) *AuthMiddlewares {
 	logger := applog.NewServiceLogger("auth-middleware")
 
 	return &AuthMiddlewares{
-		logger:            logger,
-		authModuleService: authModuleService,
+		logger:     logger,
+		authModule: authModule,
 	}
 }
 
@@ -33,26 +33,26 @@ func (m *AuthMiddlewares) UserSessionGuard(next echo.HandlerFunc) echo.HandlerFu
 		header := c.Request().Header.Get("Authorization")
 
 		if !strings.HasPrefix(header, "Session") {
-      m.logger.DebugContext(c.Request().Context(), "header has no session prefix")
+			m.logger.DebugContext(c.Request().Context(), "header has no session prefix")
 			return apperror.ErrUnauthorized
 		}
 
 		parts := strings.SplitN(header, " ", 2)
 		if len(parts) != 2 {
-      m.logger.DebugContext(c.Request().Context(), "header has no token")
+			m.logger.DebugContext(c.Request().Context(), "header has no token")
 			return apperror.ErrUnauthorized
 		}
 
 		sessionToken := parts[1]
 
-		valid, err := m.authModuleService.AuthSessionValidate(c.Request().Context(), sessionToken)
+		valid, err := m.authModule.AuthSessionValidate(c.Request().Context(), sessionToken)
 		if err != nil {
-      m.logger.DebugContext(c.Request().Context(), "cannot get auth session validate", "err", err)
+			m.logger.DebugContext(c.Request().Context(), "cannot get auth session validate", "err", err)
 			return apperror.ErrUnauthorized
 		}
 
 		if !valid {
-      m.logger.DebugContext(c.Request().Context(), "token is not valid")
+			m.logger.DebugContext(c.Request().Context(), "token is not valid")
 			return apperror.ErrUnauthorized
 		}
 
@@ -75,7 +75,7 @@ func (m *AuthMiddlewares) SessionGetOwner(next echo.HandlerFunc) echo.HandlerFun
 
 		sessionToken := parts[1]
 
-		user, err := m.authModuleService.AuthSessionGetOwner(c.Request().Context(), sessionToken)
+		user, err := m.authModule.AuthSessionGetOwner(c.Request().Context(), sessionToken)
 		if err != nil {
 			return next(c)
 		}
