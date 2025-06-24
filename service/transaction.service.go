@@ -5,10 +5,10 @@ import (
 	"errors"
 	"log/slog"
 
-	"github.com/arnokay/arnobot-shared/applog"
-	"github.com/arnokay/arnobot-shared/apperror"
-
 	"github.com/jackc/pgx/v5"
+
+	"github.com/arnokay/arnobot-shared/apperror"
+	"github.com/arnokay/arnobot-shared/applog"
 )
 
 type ITransactionService interface {
@@ -41,16 +41,27 @@ type PgxTransactionService struct {
 }
 
 func NewPgxTransactionService(db pgxTransactional) *PgxTransactionService {
-  logger := applog.NewServiceLogger("transaction-service")
+	logger := applog.NewServiceLogger("transaction-service")
 
-  return &PgxTransactionService{
-    db: db,
+	return &PgxTransactionService{
+		db: db,
 
-    logger: logger,
-  }
+		logger: logger,
+	}
 }
 
 func (s *PgxTransactionService) Begin(ctx context.Context) (context.Context, error) {
+	if tx, ok := ctx.Value(txKey).(pgx.Tx); ok && tx != nil {
+		nestedTx, err := tx.Begin(ctx)
+		if err != nil {
+			s.logger.ErrorContext(ctx, "cannot begin nested transaction", "err", err)
+			return nil, apperror.ErrInternal
+		}
+		txCtx := context.WithValue(ctx, txKey, nestedTx)
+		s.logger.DebugContext(ctx, "began nested transaction")
+		return txCtx, nil
+	}
+
 	tx, err := s.db.Begin(ctx)
 	if err != nil {
 		s.logger.ErrorContext(ctx, "cannot begin transaction", "err", err)
@@ -58,7 +69,7 @@ func (s *PgxTransactionService) Begin(ctx context.Context) (context.Context, err
 	}
 	txCtx := context.WithValue(ctx, txKey, tx)
 
-  s.logger.DebugContext(ctx, "begined transaction")
+	s.logger.DebugContext(ctx, "begined transaction")
 
 	return txCtx, nil
 }
@@ -84,7 +95,7 @@ func (s *PgxTransactionService) Commit(ctx context.Context) error {
 		return apperror.ErrInternal
 	}
 
-  s.logger.DebugContext(ctx, "commited transaction")
+	s.logger.DebugContext(ctx, "commited transaction")
 
 	return nil
 }
@@ -106,7 +117,7 @@ func (s *PgxTransactionService) Rollback(ctx context.Context) error {
 		return apperror.ErrInternal
 	}
 
-  s.logger.DebugContext(ctx, "rolled back transaction")
+	s.logger.DebugContext(ctx, "rolled back transaction")
 
 	return nil
 }
