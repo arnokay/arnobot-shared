@@ -7,6 +7,6 @@ import (
 )
 
 type PlatformToggleBot struct {
-	Platform platform.Platform `json:"platform" param:"platform" validate:"validateFn=IsEnum"`
-	UserID   uuid.UUID         `json:"userId" validate:"required,uuid4"`
+	Platform platform.Platform `json:"platform" param:"platform" validate:"validateFn"`
+	UserID   uuid.UUID         `json:"userId"`
 }

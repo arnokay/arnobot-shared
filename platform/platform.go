@@ -21,7 +21,7 @@ func (p Platform) IsEnum() bool {
 	return slices.Contains(platformValues, p)
 }
 
-func (p *Platform) Validate() error {
+func (p Platform) Validate() error {
 	if !p.IsEnum() {
 		return errors.New("unknown platform")
 	}
