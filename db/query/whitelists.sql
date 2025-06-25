@@ -20,6 +20,20 @@ WHERE
         OR (sqlc.narg ('user_id')::uuid IS NULL
             OR user_id = sqlc.narg ('user_id')));
 
+-- name: WhitelistUpdate :one
+UPDATE
+    public.whitelist
+SET
+    platform = coalesce(sqlc.narg('platform'), platform),
+    platform_user_id = coalesce($2, platform_user_id),
+    platform_user_name = coalesce($3, platform_user_name),
+    platform_user_login = coalesce($4, platform_user_login),
+    user_id = coalesce($5, user_id)
+WHERE
+    id = $1
+RETURNING
+    *;
+
 -- name: WhitelistDelete :execrows
 DELETE FROM public.whitelist
 WHERE platform = $1

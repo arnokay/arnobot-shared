@@ -30,11 +30,15 @@ CREATE TABLE public.user_platform_accounts (
 );
 
 CREATE TABLE public.whitelist (
+    id serial PRIMARY KEY,
     platform public.platform NOT NULL,
     platform_user_id varchar(100),
     platform_user_name varchar(100),
     platform_user_login varchar(100),
     user_id uuid,
+    UNIQUE (platform, platform_user_id),
+    UNIQUE (platform, platform_user_name),
+    UNIQUE (platform, platform_user_login),
     FOREIGN KEY (user_id) REFERENCES public.users (id) ON UPDATE CASCADE ON DELETE RESTRICT
 );
 
@@ -44,6 +48,9 @@ CREATE TABLE public.blacklist (
     platform_user_name varchar(100),
     platform_user_login varchar(100),
     user_id uuid,
+    UNIQUE (platform, platform_user_id),
+    UNIQUE (platform, platform_user_name),
+    UNIQUE (platform, platform_user_login),
     FOREIGN KEY (user_id) REFERENCES public.users (id) ON UPDATE CASCADE ON DELETE RESTRICT
 );
 

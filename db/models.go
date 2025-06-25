@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/arnokay/arnobot-shared/platform"
 	"github.com/google/uuid"
 )
 
@@ -205,7 +206,7 @@ type AuthSession struct {
 }
 
 type Blacklist struct {
-	Platform          Platform
+	Platform          platform.Platform
 	PlatformUserID    *string
 	PlatformUserName  *string
 	PlatformUserLogin *string
@@ -219,7 +220,7 @@ type CoreChatterGroup struct {
 }
 
 type CoreFirstTimeMessage struct {
-	Platform         Platform
+	Platform         platform.Platform
 	ChatterID        string
 	ChatterName      string
 	ChatterLogin     string
@@ -233,7 +234,7 @@ type CoreFirstTimeMessage struct {
 
 type CoreGroupChatter struct {
 	GroupID      int32
-	Platform     Platform
+	Platform     platform.Platform
 	ChatterID    string
 	ChatterName  string
 	ChatterLogin string
@@ -291,7 +292,7 @@ type User struct {
 }
 
 type UserPlatformAccount struct {
-	Platform          Platform
+	Platform          platform.Platform
 	PlatformUserID    string
 	PlatformUserName  string
 	PlatformUserLogin string
@@ -299,9 +300,10 @@ type UserPlatformAccount struct {
 }
 
 type Whitelist struct {
-	Platform          Platform
+	Platform          platform.Platform
 	PlatformUserID    *string
 	PlatformUserName  *string
 	PlatformUserLogin *string
 	UserID            *uuid.UUID
+	ID                int32
 }

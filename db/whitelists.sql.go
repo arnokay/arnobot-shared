@@ -8,6 +8,7 @@ package db
 import (
 	"context"
 
+	"github.com/arnokay/arnobot-shared/platform"
 	"github.com/google/uuid"
 )
 
@@ -15,11 +16,11 @@ const whitelistCreate = `-- name: WhitelistCreate :one
 INSERT INTO public.whitelist (platform, platform_user_id, platform_user_name, platform_user_login, user_id)
     VALUES ($1, $2, $3, $4, $5)
 RETURNING
-    platform, platform_user_id, platform_user_name, platform_user_login, user_id
+    platform, platform_user_id, platform_user_name, platform_user_login, user_id, id
 `
 
 type WhitelistCreateParams struct {
-	Platform          Platform
+	Platform          platform.Platform
 	PlatformUserID    *string
 	PlatformUserName  *string
 	PlatformUserLogin *string
@@ -41,6 +42,7 @@ func (q *Queries) WhitelistCreate(ctx context.Context, arg WhitelistCreateParams
 		&i.PlatformUserName,
 		&i.PlatformUserLogin,
 		&i.UserID,
+		&i.ID,
 	)
 	return i, err
 }
@@ -59,7 +61,7 @@ WHERE platform = $1
 `
 
 type WhitelistDeleteParams struct {
-	Platform          Platform
+	Platform          platform.Platform
 	PlatformUserID    *string
 	PlatformUserName  *string
 	PlatformUserLogin *string
@@ -82,7 +84,7 @@ func (q *Queries) WhitelistDelete(ctx context.Context, arg WhitelistDeleteParams
 
 const whitelistGetOne = `-- name: WhitelistGetOne :one
 SELECT
-    platform, platform_user_id, platform_user_name, platform_user_login, user_id
+    platform, platform_user_id, platform_user_name, platform_user_login, user_id, id
 FROM
     public.whitelist
 WHERE
@@ -98,7 +100,7 @@ WHERE
 `
 
 type WhitelistGetOneParams struct {
-	Platform          Platform
+	Platform          platform.Platform
 	PlatformUserID    *string
 	PlatformUserName  *string
 	PlatformUserLogin *string
@@ -120,6 +122,52 @@ func (q *Queries) WhitelistGetOne(ctx context.Context, arg WhitelistGetOneParams
 		&i.PlatformUserName,
 		&i.PlatformUserLogin,
 		&i.UserID,
+		&i.ID,
+	)
+	return i, err
+}
+
+const whitelistUpdate = `-- name: WhitelistUpdate :one
+UPDATE
+    public.whitelist
+SET
+    platform = coalesce($6, platform),
+    platform_user_id = coalesce($2, platform_user_id),
+    platform_user_name = coalesce($3, platform_user_name),
+    platform_user_login = coalesce($4, platform_user_login),
+    user_id = coalesce($5, user_id)
+WHERE
+    id = $1
+RETURNING
+    platform, platform_user_id, platform_user_name, platform_user_login, user_id, id
+`
+
+type WhitelistUpdateParams struct {
+	ID                int32
+	PlatformUserID    *string
+	PlatformUserName  *string
+	PlatformUserLogin *string
+	UserID            *uuid.UUID
+	Platform          *platform.Platform
+}
+
+func (q *Queries) WhitelistUpdate(ctx context.Context, arg WhitelistUpdateParams) (Whitelist, error) {
+	row := q.db.QueryRow(ctx, whitelistUpdate,
+		arg.ID,
+		arg.PlatformUserID,
+		arg.PlatformUserName,
+		arg.PlatformUserLogin,
+		arg.UserID,
+		arg.Platform,
+	)
+	var i Whitelist
+	err := row.Scan(
+		&i.Platform,
+		&i.PlatformUserID,
+		&i.PlatformUserName,
+		&i.PlatformUserLogin,
+		&i.UserID,
+		&i.ID,
 	)
 	return i, err
 }

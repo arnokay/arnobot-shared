@@ -30,3 +30,13 @@ sql:
             import: "github.com/google/uuid"
             type: "UUID"
             pointer: true
+        - db_type: "public.platform"
+          go_type:
+            import: "github.com/arnokay/arnobot-shared/platform"
+            type: "Platform"
+        - db_type: "public.platform"
+          nullable: true
+          go_type:
+            import: "github.com/arnokay/arnobot-shared/platform"
+            type: "Platform"
+            pointer: true

@@ -41,6 +41,7 @@ type Querier interface {
 	WhitelistCreate(ctx context.Context, arg WhitelistCreateParams) (Whitelist, error)
 	WhitelistDelete(ctx context.Context, arg WhitelistDeleteParams) (int64, error)
 	WhitelistGetOne(ctx context.Context, arg WhitelistGetOneParams) (Whitelist, error)
+	WhitelistUpdate(ctx context.Context, arg WhitelistUpdateParams) (Whitelist, error)
 }
 
 var _ Querier = (*Queries)(nil)

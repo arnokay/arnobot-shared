@@ -8,6 +8,7 @@ import (
 )
 
 type Whitelist struct {
+	ID                int32             `json:"id"`
 	Platform          platform.Platform `json:"platform"`
 	PlatformUserID    *string           `json:"platformUserId"`
 	PlatformUserName  *string           `json:"platformUserName"`
@@ -17,6 +18,7 @@ type Whitelist struct {
 
 func NewWhitelistFromDB(fromDB db.Whitelist) Whitelist {
 	return Whitelist{
+		ID:                fromDB.ID,
 		Platform:          platform.Platform(fromDB.Platform),
 		PlatformUserID:    fromDB.PlatformUserID,
 		PlatformUserName:  fromDB.PlatformUserName,
@@ -26,24 +28,43 @@ func NewWhitelistFromDB(fromDB db.Whitelist) Whitelist {
 }
 
 type WhitelistCreate struct {
-	Platform          string     `json:"platform"`
-	PlatformUserID    *string    `json:"platformUserId"`
-	PlatformUserName  *string    `json:"platformUserName"`
-	PlatformUserLogin *string    `json:"platformUserLogin"`
-	UserID            *uuid.UUID `json:"userId"`
+	Platform          platform.Platform `json:"platform"`
+	PlatformUserID    *string           `json:"platformUserId"`
+	PlatformUserName  *string           `json:"platformUserName"`
+	PlatformUserLogin *string           `json:"platformUserLogin"`
+	UserID            *uuid.UUID        `json:"userId"`
 }
 
 type WhitelistGetOne struct {
-	Platform          string     `json:"platform"`
-	PlatformUserID    *string    `json:"platformUserId"`
-	PlatformUserName  *string    `json:"platformUserName"`
-	PlatformUserLogin *string    `json:"platformUserLogin"`
-	UserID            *uuid.UUID `json:"userId"`
+	Platform          platform.Platform `json:"platform"`
+	PlatformUserID    *string           `json:"platformUserId"`
+	PlatformUserName  *string           `json:"platformUserName"`
+	PlatformUserLogin *string           `json:"platformUserLogin"`
+	UserID            *uuid.UUID        `json:"userId"`
 }
 
 func (w WhitelistGetOne) ToDB() db.WhitelistGetOneParams {
 	return db.WhitelistGetOneParams{
-		Platform:          db.Platform(w.Platform),
+		Platform:          w.Platform,
+		PlatformUserID:    w.PlatformUserID,
+		PlatformUserName:  w.PlatformUserName,
+		PlatformUserLogin: w.PlatformUserLogin,
+		UserID:            w.UserID,
+	}
+}
+
+type WhitelistUpdate struct {
+	Platform          *platform.Platform `json:"platform"`
+	PlatformUserID    *string            `json:"platformUserId"`
+	PlatformUserName  *string            `json:"platformUserName"`
+	PlatformUserLogin *string            `json:"platformUserLogin"`
+	UserID            *uuid.UUID         `json:"userId"`
+}
+
+func (w WhitelistUpdate) ToDB(id int32) db.WhitelistUpdateParams {
+	return db.WhitelistUpdateParams{
+		ID:                id,
+		Platform:          w.Platform,
 		PlatformUserID:    w.PlatformUserID,
 		PlatformUserName:  w.PlatformUserName,
 		PlatformUserLogin: w.PlatformUserLogin,
@@ -52,9 +73,9 @@ func (w WhitelistGetOne) ToDB() db.WhitelistGetOneParams {
 }
 
 type WhitelistDelete struct {
-	Platform          string     `json:"platform"`
-	PlatformUserID    *string    `json:"platformUserId"`
-	PlatformUserName  *string    `json:"platformUserName"`
-	PlatformUserLogin *string    `json:"platformUserLogin"`
-	UserID            *uuid.UUID `json:"userId"`
+	Platform          platform.Platform `json:"platform"`
+	PlatformUserID    *string           `json:"platformUserId"`
+	PlatformUserName  *string           `json:"platformUserName"`
+	PlatformUserLogin *string           `json:"platformUserLogin"`
+	UserID            *uuid.UUID        `json:"userId"`
 }
