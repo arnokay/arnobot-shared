@@ -58,7 +58,7 @@ func (s *PlatformModuleIn) StopBot(ctx context.Context, arg data.PlatformToggleB
 
 	reqBytes, _ := req.Encode()
 
-	topicBulder := topics.TopicBuilder(topics.PlatformStartBot)
+	topicBulder := topics.TopicBuilder(topics.PlatformStopBot)
 	topicBulder.Platform(arg.Platform)
 	topic := topicBulder.Build()
 
