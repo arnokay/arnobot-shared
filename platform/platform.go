@@ -9,9 +9,10 @@ type Platform string
 
 const (
 	Twitch Platform = "twitch"
+	Kick   Platform = "kick"
 )
 
-var platformValues = []Platform{Twitch}
+var platformValues = []Platform{Twitch, Kick}
 
 func (p Platform) String() string {
 	return string(p)

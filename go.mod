@@ -1,6 +1,6 @@
 module github.com/arnokay/arnobot-shared
 
-go 1.24.2
+go 1.24.4
 
 require (
 	github.com/go-playground/locales v0.14.1

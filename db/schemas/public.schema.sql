@@ -8,7 +8,8 @@ CREATE TYPE public.user_status AS ENUM (
 );
 
 CREATE TYPE public.platform AS ENUM (
-    'twitch'
+    'twitch',
+    'kick'
 );
 
 CREATE TABLE public.users (
