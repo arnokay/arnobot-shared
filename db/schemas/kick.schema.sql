@@ -25,6 +25,7 @@ CREATE TABLE kick.selected_bots (
     user_id uuid NOT NULL PRIMARY KEY,
     broadcaster_id integer NOT NULL,
     bot_id integer NOT NULL,
+    enabled bool NOT NULL DEFAULT FALSE,
     updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id, bot_id) REFERENCES kick.bots (user_id, bot_id) ON UPDATE CASCADE ON DELETE RESTRICT
 );

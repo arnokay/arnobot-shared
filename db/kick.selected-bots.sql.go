@@ -12,38 +12,50 @@ import (
 )
 
 const kickSelectedBotChange = `-- name: KickSelectedBotChange :one
-INSERT INTO kick.selected_bots (user_id, bot_id, broadcaster_id)
-VALUES ($1, $2, $3)
-ON CONFLICT (user_id) DO UPDATE
-  SET 
-  bot_id = $2,
-  broadcaster_id = $3,
-  updated_at = CURRENT_TIMESTAMP
-  RETURNING user_id, broadcaster_id, bot_id, updated_at
+INSERT INTO kick.selected_bots (user_id, bot_id, broadcaster_id, enabled)
+    VALUES ($1, $2, $3, $4)
+ON CONFLICT (user_id)
+    DO UPDATE SET
+        bot_id = $2,
+        broadcaster_id = $3,
+        enabled = $4,
+        updated_at = CURRENT_TIMESTAMP
+    RETURNING
+        user_id, broadcaster_id, bot_id, updated_at, enabled
 `
 
 type KickSelectedBotChangeParams struct {
 	UserID        uuid.UUID
 	BotID         int32
 	BroadcasterID int32
+	Enabled       bool
 }
 
 func (q *Queries) KickSelectedBotChange(ctx context.Context, arg KickSelectedBotChangeParams) (KickSelectedBot, error) {
-	row := q.db.QueryRow(ctx, kickSelectedBotChange, arg.UserID, arg.BotID, arg.BroadcasterID)
+	row := q.db.QueryRow(ctx, kickSelectedBotChange,
+		arg.UserID,
+		arg.BotID,
+		arg.BroadcasterID,
+		arg.Enabled,
+	)
 	var i KickSelectedBot
 	err := row.Scan(
 		&i.UserID,
 		&i.BroadcasterID,
 		&i.BotID,
 		&i.UpdatedAt,
+		&i.Enabled,
 	)
 	return i, err
 }
 
 const kickSelectedBotGetByBroadcasterID = `-- name: KickSelectedBotGetByBroadcasterID :one
-SELECT user_id, broadcaster_id, bot_id, updated_at
-FROM kick.selected_bots
-WHERE broadcaster_id = $1
+SELECT
+    user_id, broadcaster_id, bot_id, updated_at, enabled
+FROM
+    kick.selected_bots
+WHERE
+    broadcaster_id = $1
 `
 
 func (q *Queries) KickSelectedBotGetByBroadcasterID(ctx context.Context, broadcasterID int32) (KickSelectedBot, error) {
@@ -54,14 +66,18 @@ func (q *Queries) KickSelectedBotGetByBroadcasterID(ctx context.Context, broadca
 		&i.BroadcasterID,
 		&i.BotID,
 		&i.UpdatedAt,
+		&i.Enabled,
 	)
 	return i, err
 }
 
 const kickSelectedBotGetByUserID = `-- name: KickSelectedBotGetByUserID :one
-SELECT user_id, broadcaster_id, bot_id, updated_at
-FROM kick.selected_bots
-WHERE user_id = $1
+SELECT
+    user_id, broadcaster_id, bot_id, updated_at, enabled
+FROM
+    kick.selected_bots
+WHERE
+    user_id = $1
 `
 
 func (q *Queries) KickSelectedBotGetByUserID(ctx context.Context, userID uuid.UUID) (KickSelectedBot, error) {
@@ -72,6 +88,36 @@ func (q *Queries) KickSelectedBotGetByUserID(ctx context.Context, userID uuid.UU
 		&i.BroadcasterID,
 		&i.BotID,
 		&i.UpdatedAt,
+		&i.Enabled,
+	)
+	return i, err
+}
+
+const kickSelectedBotStatusChange = `-- name: KickSelectedBotStatusChange :one
+UPDATE
+    twitch.selected_bots
+SET
+    enabled = $2
+WHERE
+    user_id = $1
+RETURNING
+    user_id, broadcaster_id, bot_id, updated_at, enabled
+`
+
+type KickSelectedBotStatusChangeParams struct {
+	UserID  uuid.UUID
+	Enabled bool
+}
+
+func (q *Queries) KickSelectedBotStatusChange(ctx context.Context, arg KickSelectedBotStatusChangeParams) (TwitchSelectedBot, error) {
+	row := q.db.QueryRow(ctx, kickSelectedBotStatusChange, arg.UserID, arg.Enabled)
+	var i TwitchSelectedBot
+	err := row.Scan(
+		&i.UserID,
+		&i.BroadcasterID,
+		&i.BotID,
+		&i.UpdatedAt,
+		&i.Enabled,
 	)
 	return i, err
 }

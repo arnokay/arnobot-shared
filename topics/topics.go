@@ -57,6 +57,7 @@ func (b *topicBuilder) Original() string {
 const (
 	PlatformBroadcasterChatMessageNotify = "chat.message.notify.{platform}.{broadcasterID}"
 	PlatformBroadcasterChatMessageSend   = "chat.message.send.{platform}.{broadcasterID}"
+	PlatformGetBot                       = "bot.{platform}.get"
 	PlatformStartBot                     = "bot.{platform}.start"
 	PlatformStopBot                      = "bot.{platform}.stop"
 )

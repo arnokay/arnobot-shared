@@ -12,38 +12,50 @@ import (
 )
 
 const twitchSelectedBotChange = `-- name: TwitchSelectedBotChange :one
-INSERT INTO twitch.selected_bots (user_id, bot_id, broadcaster_id)
-VALUES ($1, $2, $3)
-ON CONFLICT (user_id) DO UPDATE
-  SET 
-  bot_id = $2,
-  broadcaster_id = $3,
-  updated_at = CURRENT_TIMESTAMP
-  RETURNING user_id, broadcaster_id, bot_id, updated_at
+INSERT INTO twitch.selected_bots (user_id, bot_id, broadcaster_id, enabled)
+    VALUES ($1, $2, $3, $4)
+ON CONFLICT (user_id)
+    DO UPDATE SET
+        bot_id = $2,
+        broadcaster_id = $3,
+        enabled = $4,
+        updated_at = CURRENT_TIMESTAMP
+    RETURNING
+        user_id, broadcaster_id, bot_id, updated_at, enabled
 `
 
 type TwitchSelectedBotChangeParams struct {
 	UserID        uuid.UUID
 	BotID         string
 	BroadcasterID string
+	Enabled       bool
 }
 
 func (q *Queries) TwitchSelectedBotChange(ctx context.Context, arg TwitchSelectedBotChangeParams) (TwitchSelectedBot, error) {
-	row := q.db.QueryRow(ctx, twitchSelectedBotChange, arg.UserID, arg.BotID, arg.BroadcasterID)
+	row := q.db.QueryRow(ctx, twitchSelectedBotChange,
+		arg.UserID,
+		arg.BotID,
+		arg.BroadcasterID,
+		arg.Enabled,
+	)
 	var i TwitchSelectedBot
 	err := row.Scan(
 		&i.UserID,
 		&i.BroadcasterID,
 		&i.BotID,
 		&i.UpdatedAt,
+		&i.Enabled,
 	)
 	return i, err
 }
 
 const twitchSelectedBotGetByBroadcasterID = `-- name: TwitchSelectedBotGetByBroadcasterID :one
-SELECT user_id, broadcaster_id, bot_id, updated_at
-FROM twitch.selected_bots
-WHERE broadcaster_id = $1
+SELECT
+    user_id, broadcaster_id, bot_id, updated_at, enabled
+FROM
+    twitch.selected_bots
+WHERE
+    broadcaster_id = $1
 `
 
 func (q *Queries) TwitchSelectedBotGetByBroadcasterID(ctx context.Context, broadcasterID string) (TwitchSelectedBot, error) {
@@ -54,14 +66,18 @@ func (q *Queries) TwitchSelectedBotGetByBroadcasterID(ctx context.Context, broad
 		&i.BroadcasterID,
 		&i.BotID,
 		&i.UpdatedAt,
+		&i.Enabled,
 	)
 	return i, err
 }
 
 const twitchSelectedBotGetByUserID = `-- name: TwitchSelectedBotGetByUserID :one
-SELECT user_id, broadcaster_id, bot_id, updated_at
-FROM twitch.selected_bots
-WHERE user_id = $1
+SELECT
+    user_id, broadcaster_id, bot_id, updated_at, enabled
+FROM
+    twitch.selected_bots
+WHERE
+    user_id = $1
 `
 
 func (q *Queries) TwitchSelectedBotGetByUserID(ctx context.Context, userID uuid.UUID) (TwitchSelectedBot, error) {
@@ -72,6 +88,36 @@ func (q *Queries) TwitchSelectedBotGetByUserID(ctx context.Context, userID uuid.
 		&i.BroadcasterID,
 		&i.BotID,
 		&i.UpdatedAt,
+		&i.Enabled,
+	)
+	return i, err
+}
+
+const twitchSelectedBotStatusChange = `-- name: TwitchSelectedBotStatusChange :one
+UPDATE
+    twitch.selected_bots
+SET
+    enabled = $2
+WHERE
+    user_id = $1
+RETURNING
+    user_id, broadcaster_id, bot_id, updated_at, enabled
+`
+
+type TwitchSelectedBotStatusChangeParams struct {
+	UserID  uuid.UUID
+	Enabled bool
+}
+
+func (q *Queries) TwitchSelectedBotStatusChange(ctx context.Context, arg TwitchSelectedBotStatusChangeParams) (TwitchSelectedBot, error) {
+	row := q.db.QueryRow(ctx, twitchSelectedBotStatusChange, arg.UserID, arg.Enabled)
+	var i TwitchSelectedBot
+	err := row.Scan(
+		&i.UserID,
+		&i.BroadcasterID,
+		&i.BotID,
+		&i.UpdatedAt,
+		&i.Enabled,
 	)
 	return i, err
 }

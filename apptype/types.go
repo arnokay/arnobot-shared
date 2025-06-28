@@ -7,6 +7,8 @@ import (
 	"github.com/arnokay/arnobot-shared/apperror"
 )
 
+type EmptyResponse = Response[bool]
+
 type Request[T any] struct {
 	TraceID string `json:"traceId"`
 	Data    T      `json:"data"`
@@ -43,11 +45,11 @@ func (r *Request[T]) DecodeJSON(b []byte) error {
 }
 
 type Response[T any] struct {
-	Success bool           `json:"success"`
-	Error   string         `json:"error"`
-	Code    apperror.ErrorCode `json:"code"`
-	TraceID string         `json:"traceId"`
-	Data    T              `json:"data"`
+	Success bool               `json:"success"`
+	Error   string             `json:"error,omitempty"`
+	Code    apperror.ErrorCode `json:"code,omitempty"`
+	TraceID string             `json:"traceId,omitempty"`
+	Data    T                  `json:"data"`
 }
 
 func (r *Response[T]) ToSuccess(data T) {

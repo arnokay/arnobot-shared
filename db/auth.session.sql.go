@@ -12,9 +12,13 @@ import (
 )
 
 const authSessionActiveCount = `-- name: AuthSessionActiveCount :one
-SELECT count(token)
-FROM auth.sessions
-WHERE user_id = $1
+SELECT
+    count(token)
+FROM
+    auth.sessions
+WHERE
+    user_id = $1
+    AND status = 'active'
 `
 
 func (q *Queries) AuthSessionActiveCount(ctx context.Context, userID uuid.UUID) (int64, error) {
@@ -25,9 +29,13 @@ func (q *Queries) AuthSessionActiveCount(ctx context.Context, userID uuid.UUID) 
 }
 
 const authSessionActiveGet = `-- name: AuthSessionActiveGet :many
-SELECT token, status, user_id, created_at, last_used_at
-FROM auth.sessions
-WHERE user_id = $1 AND status = 'active'
+SELECT
+    token, status, user_id, created_at, last_used_at
+FROM
+    auth.sessions
+WHERE
+    user_id = $1
+    AND status = 'active'
 `
 
 func (q *Queries) AuthSessionActiveGet(ctx context.Context, userID uuid.UUID) ([]AuthSession, error) {
@@ -57,11 +65,10 @@ func (q *Queries) AuthSessionActiveGet(ctx context.Context, userID uuid.UUID) ([
 }
 
 const authSessionCreate = `-- name: AuthSessionCreate :one
-INSERT INTO auth.sessions (
-  user_id
-) VALUES (
-  $1
-) RETURNING token, status, user_id, created_at, last_used_at
+INSERT INTO auth.sessions (user_id)
+    VALUES ($1)
+RETURNING
+    token, status, user_id, created_at, last_used_at
 `
 
 func (q *Queries) AuthSessionCreate(ctx context.Context, userID uuid.UUID) (AuthSession, error) {
@@ -77,10 +84,33 @@ func (q *Queries) AuthSessionCreate(ctx context.Context, userID uuid.UUID) (Auth
 	return i, err
 }
 
-const authSessionGet = `-- name: AuthSessionGet :one
-SELECT token, status, user_id, created_at, last_used_at
-FROM auth.sessions
+const authSessionDelete = `-- name: AuthSessionDelete :one
+DELETE FROM auth.sessions
 WHERE token = $1
+RETURNING
+    token, status, user_id, created_at, last_used_at
+`
+
+func (q *Queries) AuthSessionDelete(ctx context.Context, token string) (AuthSession, error) {
+	row := q.db.QueryRow(ctx, authSessionDelete, token)
+	var i AuthSession
+	err := row.Scan(
+		&i.Token,
+		&i.Status,
+		&i.UserID,
+		&i.CreatedAt,
+		&i.LastUsedAt,
+	)
+	return i, err
+}
+
+const authSessionGet = `-- name: AuthSessionGet :one
+SELECT
+    token, status, user_id, created_at, last_used_at
+FROM
+    auth.sessions
+WHERE
+    token = $1
 `
 
 func (q *Queries) AuthSessionGet(ctx context.Context, token string) (AuthSession, error) {
@@ -97,10 +127,13 @@ func (q *Queries) AuthSessionGet(ctx context.Context, token string) (AuthSession
 }
 
 const authSessionGetOwner = `-- name: AuthSessionGetOwner :one
-SELECT pusers.id, pusers.username, pusers.status, pusers.created_at, pusers.updated_at
-FROM auth.sessions
-LEFT JOIN public.users as pUsers ON auth.sessions.user_id = pUsers.id
-WHERE token = $1
+SELECT
+    pusers.id, pusers.username, pusers.status, pusers.created_at, pusers.updated_at
+FROM
+    auth.sessions
+    LEFT JOIN public.users AS pUsers ON auth.sessions.user_id = pUsers.id
+WHERE
+    token = $1
 `
 
 type AuthSessionGetOwnerRow struct {
@@ -120,12 +153,44 @@ func (q *Queries) AuthSessionGetOwner(ctx context.Context, token string) (AuthSe
 	return i, err
 }
 
-const authSessionValidate = `-- name: AuthSessionValidate :one
-UPDATE auth.sessions
+const authSessionOldDeactivate = `-- name: AuthSessionOldDeactivate :exec
+UPDATE
+    auth.sessions
 SET
-last_used_at = CURRENT_TIMESTAMP
-WHERE token = $1
-RETURNING status
+    status = 'disabled'
+WHERE
+    auth.sessions.user_id = $1
+    AND last_used_at < (
+        SELECT
+            last_used_at
+        FROM
+            auth.sessions
+        WHERE
+            user_id = $1
+        ORDER BY
+            last_used_at DESC
+        LIMIT 1 OFFSET $2)
+`
+
+type AuthSessionOldDeactivateParams struct {
+	UserID uuid.UUID
+	Offset int32
+}
+
+func (q *Queries) AuthSessionOldDeactivate(ctx context.Context, arg AuthSessionOldDeactivateParams) error {
+	_, err := q.db.Exec(ctx, authSessionOldDeactivate, arg.UserID, arg.Offset)
+	return err
+}
+
+const authSessionValidate = `-- name: AuthSessionValidate :one
+UPDATE
+    auth.sessions
+SET
+    last_used_at = CURRENT_TIMESTAMP
+WHERE
+    token = $1
+RETURNING
+    status
 `
 
 func (q *Queries) AuthSessionValidate(ctx context.Context, token string) (AuthSessionStatus, error) {

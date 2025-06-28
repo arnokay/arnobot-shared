@@ -59,6 +59,7 @@ type Platform string
 
 const (
 	PlatformTwitch Platform = "twitch"
+	PlatformKick   Platform = "kick"
 )
 
 func (e *Platform) Scan(src interface{}) error {
@@ -236,6 +237,7 @@ type KickSelectedBot struct {
 	BroadcasterID int32
 	BotID         int32
 	UpdatedAt     time.Time
+	Enabled       bool
 }
 
 type TwitchBot struct {
@@ -259,6 +261,7 @@ type TwitchSelectedBot struct {
 	BroadcasterID string
 	BotID         string
 	UpdatedAt     time.Time
+	Enabled       bool
 }
 
 type User struct {
