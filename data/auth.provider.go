@@ -64,13 +64,14 @@ func (p AuthProviderCreate) ToDB() db.AuthProviderCreateParams {
 }
 
 type AuthProviderUpdateTokens struct {
+	ID           int32
 	AccessToken  string
 	RefreshToken *string
 }
 
-func (p AuthProviderUpdateTokens) ToDB(id int32) db.AuthProviderUpdateTokensParams {
+func (p AuthProviderUpdateTokens) ToDB() db.AuthProviderUpdateTokensParams {
 	return db.AuthProviderUpdateTokensParams{
-		ID:           id,
+		ID:           p.ID,
 		AccessToken:  p.AccessToken,
 		RefreshToken: p.RefreshToken,
 	}

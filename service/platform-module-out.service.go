@@ -6,12 +6,9 @@ import (
 
 	"github.com/nats-io/nats.go"
 
-	"github.com/arnokay/arnobot-shared/apperror"
 	"github.com/arnokay/arnobot-shared/applog"
-	"github.com/arnokay/arnobot-shared/apptype"
 	"github.com/arnokay/arnobot-shared/events"
 	"github.com/arnokay/arnobot-shared/topics"
-	"github.com/arnokay/arnobot-shared/trace"
 )
 
 type PlatformModuleOut struct {
@@ -29,23 +26,10 @@ func NewPlatformModuleOut(mb *nats.Conn) *PlatformModuleOut {
 }
 
 func (s *PlatformModuleOut) ChatMessageNotify(ctx context.Context, arg events.Message) error {
-	payload := apptype.CoreChatMessageNotify{
-		Data:    arg,
-		TraceID: trace.FromContext(ctx),
-	}
-
-	payloadBytes, _ := payload.Encode()
-
 	topicBulder := topics.TopicBuilder(topics.PlatformBroadcasterChatMessageNotify)
 	topicBulder.Platform(arg.Platform)
   topicBulder.BroadcasterID(arg.BroadcasterID)
 	topic := topicBulder.Build()
 
-	err := s.mb.Publish(topic, payloadBytes)
-	if err != nil {
-		s.logger.ErrorContext(ctx, "cannot notify about new message", "err", err)
-		return apperror.ErrInternal
-	}
-
-	return nil
+  return HandlePublish(ctx, s.mb, s.logger, topic, arg)
 }
