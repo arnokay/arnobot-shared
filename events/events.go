@@ -8,6 +8,16 @@ type EventCommon struct {
 	BroadcasterID string            `json:"broadcasterId"`
 }
 
+type ChatterRole int
+
+const (
+	ChatterPleb ChatterRole = iota + 1
+	ChatterSub
+	ChatterVIP
+	ChatterModerator
+	ChatterBroadcaster
+)
+
 type Message struct {
 	EventCommon
 
@@ -18,9 +28,10 @@ type Message struct {
 	BroadcasterLogin string `json:"broadcasterLogin"`
 	BroadcasterName  string `json:"broadcasterName"`
 
-	ChatterID    string `json:"chatterId"`
-	ChatterLogin string `json:"chatterLogin"`
-	ChatterName  string `json:"chatterName"`
+	ChatterID    string      `json:"chatterId"`
+	ChatterLogin string      `json:"chatterLogin"`
+	ChatterName  string      `json:"chatterName"`
+	ChatterRole  ChatterRole `json:"chatterRole"`
 }
 
 type MessageSend struct {

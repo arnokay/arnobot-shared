@@ -25,6 +25,11 @@ type Querier interface {
 	AuthSessionGetOwner(ctx context.Context, token string) (AuthSessionGetOwnerRow, error)
 	AuthSessionOldDeactivate(ctx context.Context, arg AuthSessionOldDeactivateParams) error
 	AuthSessionValidate(ctx context.Context, token string) (AuthSessionStatus, error)
+	CoreUserCommandCreate(ctx context.Context, arg CoreUserCommandCreateParams) (CoreUserCommand, error)
+	CoreUserCommandDelete(ctx context.Context, arg CoreUserCommandDeleteParams) (CoreUserCommand, error)
+	CoreUserCommandGetByUserID(ctx context.Context, userID uuid.UUID) ([]CoreUserCommand, error)
+	CoreUserCommandGetOne(ctx context.Context, arg CoreUserCommandGetOneParams) (CoreUserCommand, error)
+	CoreUserCommandUpdate(ctx context.Context, arg CoreUserCommandUpdateParams) (CoreUserCommand, error)
 	KickBotCreate(ctx context.Context, arg KickBotCreateParams) (KickBot, error)
 	KickBotDelete(ctx context.Context, userID uuid.UUID) (int64, error)
 	KickBotGet(ctx context.Context, arg KickBotGetParams) (KickBot, error)
