@@ -4,7 +4,9 @@ SELECT
 FROM
     core.user_commands
 WHERE
-    user_id = $1;
+    user_id = $1
+ORDER BY
+    updated_at DESC;
 
 -- name: CoreUserCommandGetOne :one
 SELECT
@@ -25,9 +27,9 @@ RETURNING
 UPDATE
     core.user_commands
 SET
-    name = COALESCE(sqlc.narg('NewName')::uuid, name),
-    text = COALESCE(sqlc.narg('text')::text, text),
-    reply = COALESCE(sqlc.narg('reply')::bool, reply)
+    name = COALESCE(sqlc.narg ('NewName')::varchar(50), name),
+    text = COALESCE(sqlc.narg ('text')::text, text),
+    reply = COALESCE(sqlc.narg ('reply')::bool, reply)
 WHERE
     user_id = $1
     AND name = $2

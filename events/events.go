@@ -1,8 +1,13 @@
 package events
 
-import "github.com/arnokay/arnobot-shared/platform"
+import (
+	"github.com/google/uuid"
+
+	"github.com/arnokay/arnobot-shared/platform"
+)
 
 type EventCommon struct {
+	UserID        uuid.UUID         `json:"userId"`
 	Platform      platform.Platform `json:"platform"`
 	BotID         string            `json:"botId"`
 	BroadcasterID string            `json:"broadcasterId"`

@@ -198,10 +198,12 @@ type CoreGroupChatter struct {
 }
 
 type CoreUserCommand struct {
-	UserID uuid.UUID
-	Name   string
-	Text   string
-	Reply  bool
+	UserID    uuid.UUID
+	Name      string
+	Text      string
+	Reply     bool
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 type CoreUserCounter struct {

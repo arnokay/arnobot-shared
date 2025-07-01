@@ -15,7 +15,6 @@ type Querier interface {
 	AuthProviderGet(ctx context.Context, arg AuthProviderGetParams) (AuthProvider, error)
 	AuthProviderGetByProviderUserId(ctx context.Context, arg AuthProviderGetByProviderUserIdParams) (AuthProvider, error)
 	AuthProviderGetByUserId(ctx context.Context, arg AuthProviderGetByUserIdParams) (AuthProvider, error)
-	// refresh_token = COALESCE($2, refresh_token),
 	AuthProviderUpdateTokens(ctx context.Context, arg AuthProviderUpdateTokensParams) (int64, error)
 	AuthSessionActiveCount(ctx context.Context, userID uuid.UUID) (int64, error)
 	AuthSessionActiveGet(ctx context.Context, userID uuid.UUID) ([]AuthSession, error)

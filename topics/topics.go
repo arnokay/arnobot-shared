@@ -24,6 +24,15 @@ const (
 	AuthSessionTokenExchange = "auth.session-token.exchange"
 )
 
+// Core topics
+const (
+	CoreUserCommandGetOne      = "core.user-command.get-one"
+	CoreUserCommandGetByUserID = "core.user-command.get-by-user-id"
+	CoreUserCommandCreate      = "core.user-command.create"
+	CoreUserCommandUpdate      = "core.user-command.update"
+	CoreUserCommandDelete      = "core.user-command.delete"
+)
+
 type topicBuilder struct {
 	original string
 	modified string

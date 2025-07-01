@@ -48,6 +48,8 @@ CREATE TABLE core.user_commands (
     name varchar(50) NOT NULL,
     text text NOT NULL,
     reply boolean NOT NULL DEFAULT FALSE,
+    created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (user_id, name),
     FOREIGN KEY (user_id) REFERENCES public.users (id) ON UPDATE CASCADE ON DELETE RESTRICT
 );

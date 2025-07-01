@@ -150,21 +150,20 @@ func (q *Queries) AuthProviderGetByUserId(ctx context.Context, arg AuthProviderG
 const authProviderUpdateTokens = `-- name: AuthProviderUpdateTokens :execrows
 UPDATE auth.providers
 SET
-access_token = COALESCE($1, access_token),
-refresh_token = $3,
+access_token = $1,
+refresh_token = $2,
 updated_at = CURRENT_TIMESTAMP
-WHERE id = $2
+WHERE id = $3
 `
 
 type AuthProviderUpdateTokensParams struct {
 	AccessToken  string
+	RefreshToken string
 	ID           int32
-	RefreshToken *string
 }
 
-// refresh_token = COALESCE($2, refresh_token),
 func (q *Queries) AuthProviderUpdateTokens(ctx context.Context, arg AuthProviderUpdateTokensParams) (int64, error) {
-	result, err := q.db.Exec(ctx, authProviderUpdateTokens, arg.AccessToken, arg.ID, arg.RefreshToken)
+	result, err := q.db.Exec(ctx, authProviderUpdateTokens, arg.AccessToken, arg.RefreshToken, arg.ID)
 	if err != nil {
 		return 0, err
 	}

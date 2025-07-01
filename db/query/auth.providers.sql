@@ -38,9 +38,8 @@ INSERT INTO auth.providers (
 -- name: AuthProviderUpdateTokens :execrows
 UPDATE auth.providers
 SET
-access_token = COALESCE($1, access_token),
--- refresh_token = COALESCE($2, refresh_token),
-refresh_token = sqlc.narg('refresh_token'),
+access_token = $1,
+refresh_token = $2,
 updated_at = CURRENT_TIMESTAMP
-WHERE id = $2;
+WHERE id = $3;
 

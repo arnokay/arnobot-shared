@@ -15,7 +15,7 @@ const coreUserCommandCreate = `-- name: CoreUserCommandCreate :one
 INSERT INTO core.user_commands (user_id, name, text, reply)
     VALUES ($1, $2, $3, $4)
 RETURNING
-    user_id, name, text, reply
+    user_id, name, text, reply, created_at, updated_at
 `
 
 type CoreUserCommandCreateParams struct {
@@ -38,6 +38,8 @@ func (q *Queries) CoreUserCommandCreate(ctx context.Context, arg CoreUserCommand
 		&i.Name,
 		&i.Text,
 		&i.Reply,
+		&i.CreatedAt,
+		&i.UpdatedAt,
 	)
 	return i, err
 }
@@ -47,7 +49,7 @@ DELETE FROM core.user_commands
 WHERE user_id = $1
     AND name = $2
 RETURNING
-    user_id, name, text, reply
+    user_id, name, text, reply, created_at, updated_at
 `
 
 type CoreUserCommandDeleteParams struct {
@@ -63,17 +65,21 @@ func (q *Queries) CoreUserCommandDelete(ctx context.Context, arg CoreUserCommand
 		&i.Name,
 		&i.Text,
 		&i.Reply,
+		&i.CreatedAt,
+		&i.UpdatedAt,
 	)
 	return i, err
 }
 
 const coreUserCommandGetByUserID = `-- name: CoreUserCommandGetByUserID :many
 SELECT
-    user_id, name, text, reply
+    user_id, name, text, reply, created_at, updated_at
 FROM
     core.user_commands
 WHERE
     user_id = $1
+ORDER BY
+    updated_at DESC
 `
 
 func (q *Queries) CoreUserCommandGetByUserID(ctx context.Context, userID uuid.UUID) ([]CoreUserCommand, error) {
@@ -90,6 +96,8 @@ func (q *Queries) CoreUserCommandGetByUserID(ctx context.Context, userID uuid.UU
 			&i.Name,
 			&i.Text,
 			&i.Reply,
+			&i.CreatedAt,
+			&i.UpdatedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -103,7 +111,7 @@ func (q *Queries) CoreUserCommandGetByUserID(ctx context.Context, userID uuid.UU
 
 const coreUserCommandGetOne = `-- name: CoreUserCommandGetOne :one
 SELECT
-    user_id, name, text, reply
+    user_id, name, text, reply, created_at, updated_at
 FROM
     core.user_commands
 WHERE
@@ -124,6 +132,8 @@ func (q *Queries) CoreUserCommandGetOne(ctx context.Context, arg CoreUserCommand
 		&i.Name,
 		&i.Text,
 		&i.Reply,
+		&i.CreatedAt,
+		&i.UpdatedAt,
 	)
 	return i, err
 }
@@ -132,20 +142,20 @@ const coreUserCommandUpdate = `-- name: CoreUserCommandUpdate :one
 UPDATE
     core.user_commands
 SET
-    name = COALESCE($3::uuid, name),
+    name = COALESCE($3::varchar(50), name),
     text = COALESCE($4::text, text),
     reply = COALESCE($5::bool, reply)
 WHERE
     user_id = $1
     AND name = $2
 RETURNING
-    user_id, name, text, reply
+    user_id, name, text, reply, created_at, updated_at
 `
 
 type CoreUserCommandUpdateParams struct {
 	UserID  uuid.UUID
 	Name    string
-	NewName *uuid.UUID
+	NewName *string
 	Text    *string
 	Reply   *bool
 }
@@ -164,6 +174,8 @@ func (q *Queries) CoreUserCommandUpdate(ctx context.Context, arg CoreUserCommand
 		&i.Name,
 		&i.Text,
 		&i.Reply,
+		&i.CreatedAt,
+		&i.UpdatedAt,
 	)
 	return i, err
 }
