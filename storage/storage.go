@@ -3,15 +3,14 @@ package storage
 import (
 	"context"
 	"errors"
-	"log/slog"
 	"strings"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 
+	"github.com/arnokay/arnobot-shared/apperror"
 	"github.com/arnokay/arnobot-shared/applog"
 	"github.com/arnokay/arnobot-shared/db"
-	"github.com/arnokay/arnobot-shared/apperror"
 	"github.com/arnokay/arnobot-shared/service"
 )
 
@@ -25,7 +24,7 @@ type Storage struct {
 	db    db.DBTX
 	query *db.Queries
 
-	logger *slog.Logger
+	logger applog.Logger
 }
 
 func NewStorage(database db.DBTX) *Storage {

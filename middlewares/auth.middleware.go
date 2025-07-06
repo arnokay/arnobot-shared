@@ -1,7 +1,6 @@
 package middlewares
 
 import (
-	"log/slog"
 	"strings"
 
 	"github.com/labstack/echo/v4"
@@ -13,7 +12,7 @@ import (
 )
 
 type AuthMiddlewares struct {
-	logger     *slog.Logger
+	logger     applog.Logger
 	authModule *service.AuthModule
 }
 

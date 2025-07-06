@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"log/slog"
 
 	"github.com/google/uuid"
 	"github.com/nats-io/nats.go"
@@ -14,7 +13,7 @@ import (
 
 type UserCommandModule struct {
 	mb     *nats.Conn
-	logger *slog.Logger
+	logger applog.Logger
 }
 
 func NewUserCommandModule(mb *nats.Conn) *UserCommandModule {

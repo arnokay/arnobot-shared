@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"log/slog"
 
 	"github.com/nats-io/nats.go"
 
@@ -13,7 +12,7 @@ import (
 
 type AuthModule struct {
 	mb     *nats.Conn
-	logger *slog.Logger
+	logger applog.Logger
 }
 
 func NewAuthModule(mb *nats.Conn) *AuthModule {

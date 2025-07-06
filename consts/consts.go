@@ -1,10 +1,5 @@
 package consts
 
-const (
-	LOGGER_APP_KEY     = "app"
-	LOGGER_SERVICE_KEY = "service"
-)
-
 type mbTopicKey string
 
 const (

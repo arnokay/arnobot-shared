@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"errors"
-	"log/slog"
 
 	"github.com/jackc/pgx/v5"
 
@@ -37,7 +36,7 @@ type pgxTransactional interface {
 type PgxTransactionService struct {
 	db pgxTransactional
 
-	logger *slog.Logger
+	logger applog.Logger
 }
 
 func NewPgxTransactionService(db pgxTransactional) *PgxTransactionService {

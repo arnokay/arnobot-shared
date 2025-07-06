@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"log/slog"
 
 	"github.com/nats-io/nats.go"
 
@@ -14,7 +13,7 @@ import (
 
 type PlatformModuleIn struct {
 	mb     *nats.Conn
-	logger *slog.Logger
+	logger applog.Logger
 }
 
 func NewPlatformModuleIn(mb *nats.Conn) *PlatformModuleIn {
