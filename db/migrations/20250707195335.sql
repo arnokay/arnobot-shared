@@ -1,0 +1,2 @@
+-- Create "user_scheduled_messages" table
+CREATE TABLE "core"."user_scheduled_messages" ("id" serial NOT NULL, "user_id" uuid NOT NULL, "text" text NOT NULL, "cooldown" bigint NOT NULL, "platforms" "public"."platform"[] NOT NULL DEFAULT '{}', "created_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, "updated_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY ("id"), CONSTRAINT "user_scheduled_messages_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."users" ("id") ON UPDATE CASCADE ON DELETE RESTRICT);
