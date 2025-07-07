@@ -218,6 +218,16 @@ type CoreUserPrefix struct {
 	Prefix string
 }
 
+type CoreUserScheduledMessage struct {
+	ID        int32
+	UserID    uuid.UUID
+	Text      string
+	Cooldown  int64
+	Platforms []platform.Platform
+	CreatedAt time.Time
+	UpdatedAt time.Time
+}
+
 type KickBot struct {
 	UserID        uuid.UUID
 	BroadcasterID int32
