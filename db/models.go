@@ -230,24 +230,24 @@ type CoreUserScheduledMessage struct {
 
 type KickBot struct {
 	UserID        uuid.UUID
-	BroadcasterID int32
-	BotID         int32
+	BroadcasterID string
+	BotID         string
 }
 
 type KickDefaultBot struct {
 	Main  bool
-	BotID int32
+	BotID string
 }
 
 type KickDefaultBroadcaster struct {
 	Main          bool
-	BroadcasterID int32
+	BroadcasterID string
 }
 
 type KickSelectedBot struct {
 	UserID        uuid.UUID
-	BroadcasterID int32
-	BotID         int32
+	BroadcasterID string
+	BotID         string
 	UpdatedAt     time.Time
 	Enabled       bool
 }

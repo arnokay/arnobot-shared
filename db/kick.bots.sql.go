@@ -20,8 +20,8 @@ RETURNING
 
 type KickBotCreateParams struct {
 	UserID        uuid.UUID
-	BroadcasterID int32
-	BotID         int32
+	BroadcasterID string
+	BotID         string
 }
 
 func (q *Queries) KickBotCreate(ctx context.Context, arg KickBotCreateParams) (KickBot, error) {
@@ -56,7 +56,7 @@ WHERE
 
 type KickBotGetParams struct {
 	UserID uuid.UUID
-	BotID  int32
+	BotID  string
 }
 
 func (q *Queries) KickBotGet(ctx context.Context, arg KickBotGetParams) (KickBot, error) {
@@ -73,16 +73,16 @@ FROM
     kick.bots
 WHERE ($1::uuid IS NULL
     OR user_id = $1)
-AND ($2::int IS NULL
+AND ($2::varchar(100) IS NULL
     OR broadcaster_id = $2)
-AND ($3::int IS NULL
+AND ($3::varchar(100) IS NULL
     OR bot_id = $3)
 `
 
 type KickBotsGetParams struct {
 	UserID        *uuid.UUID
-	BroadcasterID *int32
-	BotID         *int32
+	BroadcasterID *string
+	BotID         *string
 }
 
 func (q *Queries) KickBotsGet(ctx context.Context, arg KickBotsGetParams) ([]KickBot, error) {

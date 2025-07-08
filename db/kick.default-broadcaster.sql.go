@@ -18,9 +18,9 @@ WHERE
     main = TRUE
 `
 
-func (q *Queries) KickDefaultBroadcasterGet(ctx context.Context) (int32, error) {
+func (q *Queries) KickDefaultBroadcasterGet(ctx context.Context) (string, error) {
 	row := q.db.QueryRow(ctx, kickDefaultBroadcasterGet)
-	var broadcaster_id int32
+	var broadcaster_id string
 	err := row.Scan(&broadcaster_id)
 	return broadcaster_id, err
 }
@@ -35,7 +35,7 @@ ON CONFLICT (main)
         broadcaster_id
 `
 
-func (q *Queries) KickDefaultBroadcasterUpdate(ctx context.Context, broadcasterID int32) (int64, error) {
+func (q *Queries) KickDefaultBroadcasterUpdate(ctx context.Context, broadcasterID string) (int64, error) {
 	result, err := q.db.Exec(ctx, kickDefaultBroadcasterUpdate, broadcasterID)
 	if err != nil {
 		return 0, err

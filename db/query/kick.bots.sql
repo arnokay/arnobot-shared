@@ -20,9 +20,9 @@ FROM
     kick.bots
 WHERE (sqlc.narg ('user_id')::uuid IS NULL
     OR user_id = sqlc.narg ('user_id'))
-AND (sqlc.narg ('broadcaster_id')::int IS NULL
+AND (sqlc.narg ('broadcaster_id')::varchar(100) IS NULL
     OR broadcaster_id = sqlc.narg ('broadcaster_id'))
-AND (sqlc.narg ('bot_id')::int IS NULL
+AND (sqlc.narg ('bot_id')::varchar(100) IS NULL
     OR bot_id = sqlc.narg ('bot_id'));
 
 -- name: KickBotDelete :execrows

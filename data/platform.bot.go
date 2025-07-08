@@ -1,6 +1,8 @@
 package data
 
 import (
+	"time"
+
 	"github.com/google/uuid"
 
 	"github.com/arnokay/arnobot-shared/platform"
@@ -17,8 +19,32 @@ type PlatformBotGet struct {
 }
 
 type PlatformBot struct {
-	Platform platform.Platform
-	BotID    string
-	UserID   uuid.UUID
-	Enabled  bool
+	Platform      platform.Platform
+	BotID         string
+	BroadcasterID string
+	UserID        uuid.UUID
+}
+
+type PlatformDefaultBot struct {
+	BotID string
+}
+
+type PlatformSelectedBot struct {
+	UserID        uuid.UUID
+	BotID         string
+	BroadcasterID string
+	Enabled       bool
+	UpdatedAt     time.Time
+}
+
+type PlatformBotCreate struct {
+	UserID        uuid.UUID
+	BotID         string
+	BroadcasterID string
+}
+
+type PlatformBotsGet struct {
+	UserID        *uuid.UUID
+	BotID         *string
+	BroadcasterID *string
 }

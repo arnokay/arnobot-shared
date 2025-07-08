@@ -26,8 +26,8 @@ ON CONFLICT (user_id)
 
 type KickSelectedBotChangeParams struct {
 	UserID        uuid.UUID
-	BotID         int32
-	BroadcasterID int32
+	BotID         string
+	BroadcasterID string
 	Enabled       bool
 }
 
@@ -58,7 +58,7 @@ WHERE
     broadcaster_id = $1
 `
 
-func (q *Queries) KickSelectedBotGetByBroadcasterID(ctx context.Context, broadcasterID int32) (KickSelectedBot, error) {
+func (q *Queries) KickSelectedBotGetByBroadcasterID(ctx context.Context, broadcasterID string) (KickSelectedBot, error) {
 	row := q.db.QueryRow(ctx, kickSelectedBotGetByBroadcasterID, broadcasterID)
 	var i KickSelectedBot
 	err := row.Scan(

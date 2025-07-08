@@ -29,7 +29,7 @@ ON CONFLICT (main) DO UPDATE
   SET bot_id = $1
 `
 
-func (q *Queries) KickDefaultBotUpdate(ctx context.Context, botID int32) (int64, error) {
+func (q *Queries) KickDefaultBotUpdate(ctx context.Context, botID string) (int64, error) {
 	result, err := q.db.Exec(ctx, kickDefaultBotUpdate, botID)
 	if err != nil {
 		return 0, err
