@@ -44,7 +44,13 @@ func ErrHandler(err error, c echo.Context) {
 		}
 	}
 
-  logger.DebugContext(c.Request().Context(), "sending error", "status", status, "err", responseErr)
+  logger.DebugContext(
+    c.Request().Context(), 
+    "sending error", 
+    "path", c.Request().URL.RawPath,
+    "status", status, 
+    "err", responseErr,
+  )
 
 	c.JSON(status, responseErr)
 }
