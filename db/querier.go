@@ -45,7 +45,7 @@ type Querier interface {
 	KickSelectedBotChange(ctx context.Context, arg KickSelectedBotChangeParams) (KickSelectedBot, error)
 	KickSelectedBotGetByBroadcasterID(ctx context.Context, broadcasterID string) (KickSelectedBot, error)
 	KickSelectedBotGetByUserID(ctx context.Context, userID uuid.UUID) (KickSelectedBot, error)
-	KickSelectedBotStatusChange(ctx context.Context, arg KickSelectedBotStatusChangeParams) (TwitchSelectedBot, error)
+	KickSelectedBotStatusChange(ctx context.Context, arg KickSelectedBotStatusChangeParams) (KickSelectedBot, error)
 	TwitchBotCreate(ctx context.Context, arg TwitchBotCreateParams) (TwitchBot, error)
 	TwitchBotDelete(ctx context.Context, userID uuid.UUID) (int64, error)
 	TwitchBotGet(ctx context.Context, arg TwitchBotGetParams) (TwitchBot, error)

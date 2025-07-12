@@ -95,7 +95,7 @@ func (q *Queries) KickSelectedBotGetByUserID(ctx context.Context, userID uuid.UU
 
 const kickSelectedBotStatusChange = `-- name: KickSelectedBotStatusChange :one
 UPDATE
-    twitch.selected_bots
+    kick.selected_bots
 SET
     enabled = $2
 WHERE
@@ -109,9 +109,9 @@ type KickSelectedBotStatusChangeParams struct {
 	Enabled bool
 }
 
-func (q *Queries) KickSelectedBotStatusChange(ctx context.Context, arg KickSelectedBotStatusChangeParams) (TwitchSelectedBot, error) {
+func (q *Queries) KickSelectedBotStatusChange(ctx context.Context, arg KickSelectedBotStatusChangeParams) (KickSelectedBot, error) {
 	row := q.db.QueryRow(ctx, kickSelectedBotStatusChange, arg.UserID, arg.Enabled)
-	var i TwitchSelectedBot
+	var i KickSelectedBot
 	err := row.Scan(
 		&i.UserID,
 		&i.BroadcasterID,

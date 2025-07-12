@@ -12,7 +12,7 @@ ON CONFLICT (user_id)
 
 -- name: KickSelectedBotStatusChange :one
 UPDATE
-    twitch.selected_bots
+    kick.selected_bots
 SET
     enabled = $2
 WHERE
